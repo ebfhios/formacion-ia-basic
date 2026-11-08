@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bloque 7: Agentes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+/* Una página por bloque: navegación entre bloques, cabecera con resumen y vídeo desplegable, preguntas y diagnóstico del bloque. */
+:root {
+  --bg: #eef1f2;
+  --surface: #ffffff;
+  --ink: #15232b;
+  --muted: #56666f;
+  --line: #d3dbde;
+  --accent: #b5620a;
+  --accent-soft: #fbeedd;
+  --brand: #134e5e;
+  --brand-soft: #e1edf0;
+  --ok: #1d7a46;
+  --ok-soft: #e3f3e9;
+  --bad: #b3261e;
+  --bad-soft: #fbe6e4;
+  --unk: #6b5ca5;
+  --unk-soft: #eeebf8;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f171b;
+    --surface: #17232a;
+    --ink: #e4ecef;
+    --muted: #9aabb3;
+    --line: #2a3a42;
+    --accent: #f0a34a;
+    --accent-soft: #3a2a17;
+    --brand: #7cc3d4;
+    --brand-soft: #1b3139;
+    --ok: #5fcf8d;
+    --ok-soft: #173326;
+    --bad: #f08a82;
+    --bad-soft: #3a1d1b;
+    --unk: #b3a6ec;
+    --unk-soft: #26213d;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f171b;
+  --surface: #17232a;
+  --ink: #e4ecef;
+  --muted: #9aabb3;
+  --line: #2a3a42;
+  --accent: #f0a34a;
+  --accent-soft: #3a2a17;
+  --brand: #7cc3d4;
+  --brand-soft: #1b3139;
+  --ok: #5fcf8d;
+  --ok-soft: #173326;
+  --bad: #f08a82;
+  --bad-soft: #3a1d1b;
+  --unk: #b3a6ec;
+  --unk-soft: #26213d;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.55;
+}
+a { color: var(--brand); }
+a:focus-visible, button:focus-visible, input:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+.wrap {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 24px 20px 64px;
+  display: grid;
+  gap: 28px;
+}
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.15; }
+h1 { font-size: clamp(1.7rem, 4vw, 2.3rem); font-weight: 700; }
+h2 { font-size: 1.45rem; font-weight: 700; }
+h3 { font-size: 1.05rem; font-weight: 600; font-family: var(--font-body); line-height: 1.4; }
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: .78rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--brand);
+}
+
+/* Navegación entre bloques */
+.blocknav { display: flex; flex-wrap: wrap; gap: 6px; }
+.blocknav a {
+  font-size: .8rem; text-decoration: none; color: var(--muted);
+  padding: 3px 10px; border-radius: 99px; border: 1px solid var(--line);
+  background: var(--surface);
+}
+.blocknav a .n { font-family: var(--font-mono); margin-right: 4px; }
+.blocknav a:hover { border-color: var(--accent); color: var(--ink); }
+.blocknav a[aria-current="page"] { background: var(--brand); border-color: var(--brand); color: var(--surface); }
+
+/* Cabecera del bloque */
+.hero {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 22px 22px 20px;
+  display: grid;
+  gap: 14px;
+}
+.hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+.hero-title { display: grid; gap: 6px; flex: 1 1 320px; }
+.summary-text { margin: 0; color: var(--muted); max-width: 68ch; }
+.video-btn {
+  flex: 0 0 auto;
+  font: inherit; font-weight: 600; font-size: .92rem;
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 9px 16px; border-radius: 99px; cursor: pointer;
+  border: 1px solid var(--accent);
+  background: var(--accent); color: #fff;
+  text-decoration: none;
+}
+:root[data-theme="dark"] .video-btn { color: #1a1206; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .video-btn { color: #1a1206; } }
+:root .video-btn[aria-expanded="true"] { background: transparent; color: var(--accent); }
+.video-btn svg { width: 14px; height: 14px; fill: currentColor; }
+
+.player { display: grid; gap: 10px; }
+.player[hidden] { display: none; }
+.vtabs { display: flex; flex-wrap: wrap; gap: 6px; }
+.vtab {
+  font: inherit; font-size: .82rem; cursor: pointer;
+  padding: 4px 12px; border-radius: 99px;
+  border: 1px solid var(--line); background: var(--bg); color: var(--ink);
+}
+.vtab[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.frame {
+  position: relative; width: 100%; aspect-ratio: 16 / 9;
+  border-radius: 10px; overflow: hidden; background: #000;
+}
+.frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.vmeta { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: .88rem; }
+.vmeta .vt { font-weight: 600; }
+.vmeta .vd { color: var(--muted); display: block; }
+.vmeta a { white-space: nowrap; }
+.extra-videos { font-size: .88rem; color: var(--muted); display: grid; gap: 6px; }
+
+/* Progreso */
+.progress-line { display: flex; align-items: center; gap: 12px; }
+.progress { flex: 1; height: 8px; border-radius: 99px; background: var(--line); overflow: hidden; }
+.progress > span { display: block; height: 100%; width: 0; background: var(--accent); transition: width .3s ease; }
+.count { font-variant-numeric: tabular-nums; color: var(--muted); font-size: .88rem; white-space: nowrap; }
+
+/* Preguntas */
+.qs { display: grid; gap: 14px; }
+.q {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 18px;
+  display: grid;
+  gap: 12px;
+  border-left: 5px solid var(--line);
+}
+.q.is-ok { border-left-color: var(--ok); }
+.q.is-bad { border-left-color: var(--bad); }
+.q.is-unk { border-left-color: var(--unk); }
+.q-num { font-family: var(--font-mono); font-size: .78rem; color: var(--muted); }
+.opts { display: grid; gap: 8px; }
+.opt {
+  font: inherit;
+  text-align: left;
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--ink);
+  cursor: pointer;
+  display: flex; gap: 10px; align-items: flex-start;
+  transition: border-color .15s, background .15s;
+}
+.opt .letter {
+  font-family: var(--font-mono);
+  font-size: .8rem;
+  flex: 0 0 auto;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  display: inline-grid; place-items: center;
+  margin-top: 1px;
+  color: var(--muted);
+}
+.opt:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
+.opt:disabled { cursor: default; }
+.opt.correct { border-color: var(--ok); background: var(--ok-soft); }
+.opt.correct .letter { border-color: var(--ok); color: var(--ok); }
+.opt.chosen-wrong { border-color: var(--bad); background: var(--bad-soft); }
+.opt.chosen-wrong .letter { border-color: var(--bad); color: var(--bad); }
+.opt.faded { opacity: .55; }
+.unknown-btn {
+  justify-self: start;
+  font: inherit; font-size: .9rem;
+  background: none; border: 1px dashed var(--unk); color: var(--unk);
+  padding: 6px 12px; border-radius: 8px; cursor: pointer;
+}
+.unknown-btn:hover:not(:disabled) { background: var(--unk-soft); }
+.unknown-btn:disabled { opacity: .4; cursor: default; }
+
+.fb { border-radius: 8px; padding: 12px 14px; font-size: .95rem; display: grid; gap: 8px; }
+.fb[hidden] { display: none; }
+.fb.ok { background: var(--ok-soft); }
+.fb.bad { background: var(--bad-soft); }
+.fb.unk { background: var(--unk-soft); }
+.fb .verdict { font-weight: 600; }
+.fb.ok .verdict { color: var(--ok); }
+.fb.bad .verdict { color: var(--bad); }
+.fb.unk .verdict { color: var(--unk); }
+.fb p { margin: 0; }
+.rec { display: grid; gap: 6px; }
+.rec-title { font-size: .85rem; font-weight: 600; }
+.res {
+  display: flex; gap: 10px; align-items: flex-start;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 12px;
+  text-decoration: none;
+  color: var(--ink);
+}
+.res:hover { border-color: var(--accent); }
+.res .tag {
+  flex: 0 0 auto;
+  font-family: var(--font-mono); font-size: .7rem;
+  text-transform: uppercase; letter-spacing: .05em;
+  padding: 2px 7px; border-radius: 4px;
+  background: var(--accent-soft); color: var(--accent);
+  margin-top: 2px;
+}
+.res .tag.doc { background: var(--brand-soft); color: var(--brand); }
+.res .t { font-weight: 600; font-size: .92rem; }
+.res .d { display: block; color: var(--muted); font-size: .85rem; }
+
+/* Diagnóstico del bloque */
+.results {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 22px 20px;
+  display: grid;
+  gap: 18px;
+}
+.score-line { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.big { font-family: var(--font-display); font-size: 2.6rem; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; }
+.big small { font-size: 1.1rem; color: var(--muted); font-weight: 500; }
+.overall { font-weight: 600; }
+.plan { display: grid; gap: 8px; }
+.plan h3 { font-family: var(--font-display); font-size: 1.05rem; }
+.empty { color: var(--muted); font-size: .95rem; margin: 0; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.btn {
+  font: inherit; font-weight: 600; font-size: .95rem;
+  padding: 9px 16px; border-radius: 8px; cursor: pointer;
+  border: 1px solid var(--accent);
+  background: var(--accent); color: #fff;
+}
+:root[data-theme="dark"] .btn { color: #1a1206; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn { color: #1a1206; } }
+:root .btn.ghost { background: transparent; color: var(--accent); }
+.status { font-size: .88rem; color: var(--muted); }
+
+.pager { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.pager a {
+  display: grid; gap: 2px; text-decoration: none; color: var(--ink);
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+  padding: 10px 14px; min-width: 0; flex: 1 1 220px;
+}
+.pager a:hover { border-color: var(--accent); }
+.pager a.next { text-align: right; }
+.pager .dir { font-family: var(--font-mono); font-size: .75rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.pager .spacer { flex: 1 1 220px; }
+footer { color: var(--muted); font-size: .85rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; scroll-behavior: auto !important; }
+}
+</style>
+</head>
+<body>
+<main class="wrap">
+
+  <nav class="blocknav" id="blocknav" aria-label="Bloques del test"><a href="index.html"><span class="n">←</span>Inicio</a></nav>
+
+  <header class="hero">
+    <div class="hero-top">
+      <div class="hero-title">
+        <span class="eyebrow" id="eyebrow"></span>
+        <h1 id="title"></h1>
+      </div>
+      <button class="video-btn" id="video-btn" type="button" aria-expanded="false" aria-controls="player" hidden>
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z"/></svg>
+        <span id="video-btn-label">Ver vídeo</span>
+      </button>
+    </div>
+    <div class="player" id="player" hidden>
+      <div class="vtabs" id="vtabs" role="group" aria-label="Vídeos del bloque"></div>
+      <div class="frame" id="frame"></div>
+      <div class="vmeta">
+        <span><span class="vt" id="vt"></span><span class="vd" id="vd"></span></span>
+        <a id="vlink" href="#" target="_blank" rel="noopener">Abrir en YouTube ↗</a>
+      </div>
+      <div class="extra-videos" id="extra-videos" hidden></div>
+    </div>
+    <p class="summary-text" id="summary"></p>
+    <div class="progress-line">
+      <div class="progress" aria-hidden="true"><span id="progress-bar"></span></div>
+      <span class="count" id="count"></span>
+    </div>
+  </header>
+
+  <section class="qs" id="qs" aria-label="Preguntas"></section>
+
+  <section class="results" id="resultados" aria-live="polite">
+    <div>
+      <span class="eyebrow" id="res-eyebrow">Diagnóstico del bloque</span>
+      <h2>Tu resultado</h2>
+    </div>
+    <div class="score-line">
+      <span class="big" id="score"></span>
+      <span class="overall" id="overall"></span>
+    </div>
+    <div class="plan">
+      <h3>Tu plan de repaso</h3>
+      <div id="plan"></div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="copy" type="button">Copiar resumen</button>
+      <button class="btn ghost" id="reset" type="button">Empezar de nuevo</button>
+      <span class="status" id="status" role="status"></span>
+    </div>
+  </section>
+
+  <nav class="pager" id="pager" aria-label="Bloque anterior y siguiente"></nav>
+
+  <footer>Los recursos recomendados son gratuitos. Si el vídeo no se reproduce dentro de la página, usa «Abrir en YouTube».</footer>
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  const DATA = {"index":6,"nav":[{"id":"fund","short":"Fundamentos","file":"01-fundamentos.html"},{"id":"mcp","short":"Herramientas y MCP","file":"02-herramientas-mcp.html"},{"id":"ctx","short":"Contexto","file":"03-contexto.html"},{"id":"sdd","short":"SDD","file":"04-sdd.html"},{"id":"odd","short":"ODD","file":"05-odd.html"},{"id":"vs","short":"ODD vs SDD","file":"06-odd-vs-sdd.html"},{"id":"agentes","short":"Agentes","file":"07-agentes.html"},{"id":"arneses","short":"Arneses","file":"08-arneses.html"},{"id":"evals","short":"Evaluación","file":"09-evaluacion.html"},{"id":"seg","short":"Seguridad","file":"10-seguridad.html"}],"block":{"id":"agentes","title":"Agentes y orquestación","short":"Agentes","desc":"Qué es un agente, cuándo merece la pena y cómo se coordinan varios.","qs":[{"q":"Según Anthropic, ¿qué diferencia un workflow de un agente?","opts":["En un workflow los pasos están predefinidos en código; en un agente el modelo decide sobre la marcha qué herramientas usar y qué hacer","El agente siempre es más fiable que el workflow","El workflow usa IA y el agente no","No hay diferencia: son sinónimos"],"expl":"El workflow da previsibilidad; el agente da flexibilidad a cambio de más incertidumbre y más coste.","res":["effectiveAgents","effectiveAgentsDoc"]},{"q":"¿Cuándo tiene sentido construir un agente en lugar de algo más simple?","opts":["En tareas complejas, ambiguas y de alto valor, donde no se pueden prever los pasos","Siempre: cuanta más autonomía, mejor","En tareas repetitivas con pasos fijos y conocidos","Cuando se quiere reducir el consumo de tokens"],"expl":"Si los pasos se conocen de antemano, un workflow o una llamada simple es más barato y fiable. El agente compensa cuando el problema es abierto y valioso.","res":["effectiveAgents","msIntro"]},{"q":"En el patrón orquestador-trabajadores, ¿qué hace el orquestador?","opts":["Divide la tarea, reparte subtareas a subagentes especializados y combina sus resultados","Hace todo el trabajo él solo, sin delegar","Solo guarda los registros de actividad","Elige el modelo más barato y se desactiva"],"expl":"Es el patrón multiagente más común: un agente líder planifica y coordina; los trabajadores ejecutan partes concretas en paralelo.","res":["msMulti","multiAgentDoc"]},{"q":"¿Qué es una Skill de agente?","opts":["Una carpeta con instrucciones, scripts y recursos que da a un agente general conocimiento experto reutilizable","Un modelo de IA nuevo entrenado para cada tarea","Una extensión de pago del navegador","Otro nombre para el prompt de sistema"],"expl":"En lugar de crear un agente distinto para cada caso, se le da al mismo agente general un catálogo de Skills que carga cuando las necesita.","res":["skills"]},{"q":"¿Qué hay que saber del coste de un sistema multiagente?","opts":["Consume bastantes más tokens que un solo agente; compensa cuando la tarea se puede repartir en partes independientes","Siempre es más barato que un solo agente","Es ideal cuando todas las partes dependen mucho unas de otras y comparten el mismo contexto","No necesita evaluación porque los agentes se corrigen entre ellos"],"expl":"En el sistema de investigación de Anthropic, el multiagente usa del orden de 15 veces más tokens que un chat. Merece la pena en tareas paralelizables; no tanto cuando todo depende de un contexto compartido.","res":["multiAgentDoc"]}],"summary":"Qué distingue un agente de un workflow, cuándo merece la pena dar autonomía a un modelo y cómo se coordinan varios agentes. También verás qué son las Skills y qué coste real tiene un sistema multiagente."},"videos":[{"title":"How We Build Effective Agents (Barry Zhang, Anthropic)","desc":"15 minutos: cuándo construir un agente y cuándo no.","url":"https://www.youtube.com/watch?v=D7_ipDqhtwk","yt":"D7_ipDqhtwk"},{"title":"AI Agents for Beginners: lección 1 (Microsoft)","desc":"Qué es un agente y casos de uso.","url":"https://youtu.be/3zgm60bXmQk","yt":"3zgm60bXmQk"},{"title":"AI Agents for Beginners: patrón multiagente (Microsoft)","desc":"Cómo se coordinan varios agentes.","url":"https://youtu.be/V6HpE9hZEx0","yt":"V6HpE9hZEx0"},{"title":"Don't Build Agents, Build Skills Instead (Anthropic)","desc":"Qué es una Skill y por qué reutilizarla.","url":"https://www.youtube.com/watch?v=CEvIs9y1uog","yt":"CEvIs9y1uog"}],"res":{"effectiveAgents":{"kind":"vídeo","title":"How We Build Effective Agents (Barry Zhang, Anthropic)","desc":"15 minutos: cuándo construir un agente y cuándo no.","url":"https://www.youtube.com/watch?v=D7_ipDqhtwk"},"effectiveAgentsDoc":{"kind":"lectura","title":"Building effective agents (Anthropic)","desc":"Workflows frente a agentes y los patrones más usados.","url":"https://www.anthropic.com/research/building-effective-agents"},"msIntro":{"kind":"vídeo","title":"AI Agents for Beginners: lección 1 (Microsoft)","desc":"Qué es un agente y casos de uso.","url":"https://youtu.be/3zgm60bXmQk"},"msMulti":{"kind":"vídeo","title":"AI Agents for Beginners: patrón multiagente (Microsoft)","desc":"Cómo se coordinan varios agentes.","url":"https://youtu.be/V6HpE9hZEx0"},"multiAgentDoc":{"kind":"lectura","title":"How we built our multi-agent research system (Anthropic)","desc":"Orquestador y subagentes en un caso real, con sus costes.","url":"https://www.anthropic.com/engineering/multi-agent-research-system"},"skills":{"kind":"vídeo","title":"Don't Build Agents, Build Skills Instead (Anthropic)","desc":"Qué es una Skill y por qué reutilizarla.","url":"https://www.youtube.com/watch?v=CEvIs9y1uog"}}};
+  const BLOCK = DATA.block;
+  const RES = DATA.res;
+  const TOTAL = BLOCK.qs.length;
+  const NBLOCKS = DATA.nav.length;
+  const answers = {}; // índice de pregunta -> { status: "ok" | "bad" | "unk" }
+  const LETTERS = ["A", "B", "C", "D", "E"];
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function el(tag, attrs, children) {
+    const node = document.createElement(tag);
+    if (attrs) {
+      for (const k in attrs) {
+        if (k === "class") node.className = attrs[k];
+        else if (k === "text") node.textContent = attrs[k];
+        else node.setAttribute(k, attrs[k]);
+      }
+    }
+    (children || []).forEach(c => { if (c) node.appendChild(c); });
+    return node;
+  }
+
+  function resLink(key) {
+    const r = RES[key];
+    const tagCls = r.kind === "lectura" ? "tag doc" : "tag";
+    return el("a", { class: "res", href: r.url, target: "_blank", rel: "noopener" }, [
+      el("span", { class: tagCls, text: r.kind }),
+      el("span", null, [
+        el("span", { class: "t", text: r.title }),
+        el("span", { class: "d", text: r.desc })
+      ])
+    ]);
+  }
+
+  // ---------- Cabecera y navegación ----------
+  document.getElementById("eyebrow").textContent = "Bloque " + (DATA.index + 1) + " de " + NBLOCKS + " · nivel base";
+  document.getElementById("title").textContent = BLOCK.title;
+  document.getElementById("summary").textContent = BLOCK.summary;
+
+  const navEl = document.getElementById("blocknav");
+  DATA.nav.forEach((b, i) => {
+    const a = el("a", { href: b.file }, [el("span", { class: "n", text: String(i + 1).padStart(2, "0") }), document.createTextNode(b.short)]);
+    if (i === DATA.index) a.setAttribute("aria-current", "page");
+    navEl.appendChild(a);
+  });
+
+  const pager = document.getElementById("pager");
+  const prev = DATA.nav[DATA.index - 1];
+  const next = DATA.nav[DATA.index + 1];
+  pager.appendChild(prev
+    ? el("a", { href: prev.file, class: "prev" }, [el("span", { class: "dir", text: "← Anterior" }), el("span", { text: prev.short })])
+    : el("span", { class: "spacer" }));
+  pager.appendChild(next
+    ? el("a", { href: next.file, class: "next" }, [el("span", { class: "dir", text: "Siguiente →" }), el("span", { text: next.short })])
+    : el("span", { class: "spacer" }));
+
+  // ---------- Vídeo ----------
+  const videoBtn = document.getElementById("video-btn");
+  const player = document.getElementById("player");
+  const frame = document.getElementById("frame");
+  const embeddable = DATA.videos.filter(v => v.yt);
+  const external = DATA.videos.filter(v => !v.yt);
+  let current = 0;
+
+  function loadVideo(i) {
+    current = i;
+    const v = embeddable[i];
+    frame.innerHTML = "";
+    frame.appendChild(el("iframe", {
+      src: "https://www.youtube-nocookie.com/embed/" + v.yt + "?rel=0&autoplay=1",
+      title: v.title,
+      allow: "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share",
+      referrerpolicy: "strict-origin-when-cross-origin",
+      allowfullscreen: ""
+    }));
+    document.getElementById("vt").textContent = v.title;
+    document.getElementById("vd").textContent = v.desc;
+    document.getElementById("vlink").href = v.url;
+    document.querySelectorAll(".vtab").forEach((t, j) => t.setAttribute("aria-pressed", j === i ? "true" : "false"));
+  }
+
+  if (embeddable.length) {
+    videoBtn.hidden = false;
+    if (embeddable.length > 1) {
+      document.getElementById("video-btn-label").textContent = "Ver vídeos (" + embeddable.length + ")";
+      const tabs = document.getElementById("vtabs");
+      embeddable.forEach((v, i) => {
+        const t = el("button", { class: "vtab", type: "button", "aria-pressed": "false", text: "Vídeo " + (i + 1) });
+        t.title = v.title;
+        t.addEventListener("click", () => loadVideo(i));
+        tabs.appendChild(t);
+      });
+    }
+    if (external.length) {
+      const box = document.getElementById("extra-videos");
+      box.hidden = false;
+      box.appendChild(el("span", { text: "También en este bloque (se abre en otra pestaña):" }));
+      external.forEach(v => box.appendChild(el("a", { href: v.url, target: "_blank", rel: "noopener", text: v.title + " ↗" })));
+    }
+    videoBtn.addEventListener("click", () => {
+      const open = videoBtn.getAttribute("aria-expanded") === "true";
+      videoBtn.setAttribute("aria-expanded", open ? "false" : "true");
+      player.hidden = open;
+      if (open) frame.innerHTML = ""; // al cerrar se quita el iframe para detener la reproducción
+      else loadVideo(current);
+      videoBtn.querySelector("#video-btn-label").textContent = open
+        ? (embeddable.length > 1 ? "Ver vídeos (" + embeddable.length + ")" : "Ver vídeo")
+        : "Ocultar vídeo";
+    });
+  } else if (external.length) {
+    // Sin vídeo embebible: el botón se convierte en un enlace externo
+    const v = external[0];
+    const a = el("a", { class: "video-btn", href: v.url, target: "_blank", rel: "noopener", title: v.title });
+    a.innerHTML = videoBtn.innerHTML;
+    a.querySelector("span").textContent = "Ver vídeo ↗";
+    videoBtn.replaceWith(a);
+  }
+
+  // ---------- Preguntas ----------
+  const qsEl = document.getElementById("qs");
+
+  function render() {
+    qsEl.innerHTML = "";
+    BLOCK.qs.forEach((item, idx) => {
+      const correctText = item.opts[0];
+      const card = el("article", { class: "q", id: "q-" + idx });
+      card.appendChild(el("span", { class: "q-num", text: "Pregunta " + (idx + 1) + " de " + TOTAL }));
+      card.appendChild(el("h3", { text: item.q }));
+
+      const optsWrap = el("div", { class: "opts", role: "group", "aria-label": "Opciones" });
+      shuffle(item.opts).forEach((text, i) => {
+        const btn = el("button", { class: "opt", type: "button" }, [
+          el("span", { class: "letter", text: LETTERS[i] }),
+          el("span", { text: text })
+        ]);
+        btn.dataset.correct = text === correctText ? "1" : "0";
+        btn.addEventListener("click", () => answer(idx, item, card, btn));
+        optsWrap.appendChild(btn);
+      });
+      card.appendChild(optsWrap);
+
+      const unk = el("button", { class: "unknown-btn", type: "button", text: "No lo sé" });
+      unk.addEventListener("click", () => answer(idx, item, card, null));
+      card.appendChild(unk);
+
+      card.appendChild(el("div", { class: "fb", hidden: "" }));
+      qsEl.appendChild(card);
+    });
+    update();
+  }
+
+  function answer(idx, item, card, chosenBtn) {
+    if (answers[idx]) return;
+    const status = chosenBtn === null ? "unk" : (chosenBtn.dataset.correct === "1" ? "ok" : "bad");
+    answers[idx] = { status: status };
+
+    card.querySelectorAll(".opt").forEach(b => {
+      b.disabled = true;
+      if (b.dataset.correct === "1") b.classList.add("correct");
+      else if (b === chosenBtn) b.classList.add("chosen-wrong");
+      else b.classList.add("faded");
+    });
+    card.querySelector(".unknown-btn").disabled = true;
+    card.classList.add("is-" + status);
+
+    const fb = card.querySelector(".fb");
+    fb.hidden = false;
+    fb.className = "fb " + status;
+    fb.innerHTML = "";
+    const verdicts = { ok: "Correcto.", bad: "No es correcta.", unk: "Sin problema, para eso está el repaso." };
+    fb.appendChild(el("p", { class: "verdict", text: verdicts[status] }));
+    if (status !== "ok") fb.appendChild(el("p", { text: "Respuesta correcta: " + item.opts[0] + "." }));
+    fb.appendChild(el("p", { text: item.expl }));
+    if (status !== "ok") {
+      const rec = el("div", { class: "rec" }, [el("span", { class: "rec-title", text: "Te recomendamos:" })]);
+      item.res.forEach(k => rec.appendChild(resLink(k)));
+      fb.appendChild(rec);
+    }
+    update();
+  }
+
+  // ---------- Diagnóstico ----------
+  function reviewKeys() {
+    const seen = new Set();
+    BLOCK.qs.forEach((item, idx) => {
+      const a = answers[idx];
+      if (a && a.status !== "ok") item.res.forEach(k => seen.add(k));
+    });
+    return [...seen];
+  }
+
+  function update() {
+    const answeredCount = Object.keys(answers).length;
+    const okCount = Object.values(answers).filter(a => a.status === "ok").length;
+    const done = answeredCount === TOTAL;
+
+    document.getElementById("count").textContent = answeredCount + " de " + TOTAL + " respondidas";
+    document.getElementById("progress-bar").style.width = (answeredCount / TOTAL * 100) + "%";
+    document.getElementById("score").innerHTML = okCount + "<small> / " + TOTAL + "</small>";
+    document.getElementById("res-eyebrow").textContent = done ? "Diagnóstico del bloque" : "Diagnóstico provisional · " + answeredCount + " de " + TOTAL;
+
+    const overall = document.getElementById("overall");
+    if (answeredCount === 0) overall.textContent = "Responde las preguntas para ver tu nivel en este bloque.";
+    else if (!done) overall.textContent = "Te quedan " + (TOTAL - answeredCount) + " preguntas.";
+    else {
+      const pct = okCount / TOTAL;
+      overall.textContent = pct === 1 ? "Bloque dominado. Puedes pasar al siguiente."
+        : pct >= 0.6 ? "Bien, con repaso. Mira los recursos de abajo antes de seguir."
+        : "Conviene repasar este bloque con el vídeo y las lecturas recomendadas.";
+    }
+
+    const plan = document.getElementById("plan");
+    plan.innerHTML = "";
+    const keys = reviewKeys();
+    if (keys.length) keys.forEach(k => plan.appendChild(resLink(k)));
+    else plan.appendChild(el("p", { class: "empty", text: answeredCount === 0
+      ? "Aquí aparecerán los vídeos y lecturas de las preguntas que falles o marques como «No lo sé»."
+      : "De momento no tienes nada que repasar." }));
+  }
+
+  function summaryText() {
+    const answeredCount = Object.keys(answers).length;
+    const okCount = Object.values(answers).filter(a => a.status === "ok").length;
+    const lines = [];
+    lines.push("Diagnóstico nivel base · Bloque " + (DATA.index + 1) + ": " + BLOCK.title);
+    lines.push("Fecha: " + new Date().toLocaleDateString("es-ES"));
+    lines.push("Resultado: " + okCount + "/" + TOTAL + " aciertos (" + answeredCount + "/" + TOTAL + " respondidas)");
+    const keys = reviewKeys();
+    if (keys.length) {
+      lines.push("");
+      lines.push("Plan de repaso:");
+      keys.forEach(k => lines.push("- " + RES[k].title + ": " + RES[k].url));
+    }
+    return lines.join("\n");
+  }
+
+  document.getElementById("copy").addEventListener("click", () => {
+    const status = document.getElementById("status");
+    try {
+      navigator.clipboard.writeText(summaryText()).then(
+        () => { status.textContent = "Resumen copiado."; },
+        () => { status.textContent = "No se pudo copiar. Selecciona el texto del diagnóstico y cópialo a mano."; }
+      );
+    } catch (e) {
+      status.textContent = "No se pudo copiar. Selecciona el texto del diagnóstico y cópialo a mano.";
+    }
+  });
+
+  document.getElementById("reset").addEventListener("click", () => {
+    Object.keys(answers).forEach(k => delete answers[k]);
+    document.getElementById("status").textContent = "";
+    render();
+    window.scrollTo(0, 0);
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
