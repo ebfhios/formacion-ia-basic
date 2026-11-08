@@ -3,15 +3,24 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Test nivel base</title>
+<title>Curso inicial de IA</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
-/* Portada del test: lista de los 10 bloques. Mismos colores y tipografías que las páginas de bloque. */
+/* Portada del curso inicial: presentación y lista de los 4 bloques. Mismos colores y tipografías que los bloques. */
 :root {
-  --bg: #eef1f2; --surface: #ffffff; --ink: #15232b; --muted: #56666f; --line: #d3dbde;
-  --accent: #b5620a; --accent-soft: #fbeedd; --brand: #134e5e; --brand-soft: #e1edf0;
+  --bg: #f3f3f3;
+  --surface: #ffffff;
+  --ink: #1c1c1c;
+  --muted: #5f5f5f;
+  --line: #dddddd;
+  --accent: #b5620a;
+  --accent-soft: #fbeedd;
+  --on-accent: #ffffff;
+  --brand: #ff002e;
+  --brand-ink: #d1002a;
+  --brand-soft: #ffe6ea;
   --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
   --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
@@ -19,105 +28,215 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0f171b; --surface: #17232a; --ink: #e4ecef; --muted: #9aabb3; --line: #2a3a42;
-    --accent: #f0a34a; --accent-soft: #3a2a17; --brand: #7cc3d4; --brand-soft: #1b3139;
+    --bg: #121212;
+    --surface: #1d1d1d;
+    --ink: #ececec;
+    --muted: #a6a6a6;
+    --line: #343434;
+    --accent: #f0a34a;
+    --accent-soft: #3a2a17;
+    --on-accent: #1a1206;
+    --brand: #ff002e;
+    --brand-ink: #ff6680;
+    --brand-soft: #3a1219;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #0f171b; --surface: #17232a; --ink: #e4ecef; --muted: #9aabb3; --line: #2a3a42;
-  --accent: #f0a34a; --accent-soft: #3a2a17; --brand: #7cc3d4; --brand-soft: #1b3139;
+  --bg: #121212;
+  --surface: #1d1d1d;
+  --ink: #ececec;
+  --muted: #a6a6a6;
+  --line: #343434;
+  --accent: #f0a34a;
+  --accent-soft: #3a2a17;
+  --on-accent: #1a1206;
+  --brand: #ff002e;
+  --brand-ink: #ff6680;
+  --brand-soft: #3a1219;
   color-scheme: dark;
 }
+
 * { box-sizing: border-box; }
 html, body { margin: 0; }
-body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.55; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.55;
+}
 a:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 .wrap { max-width: 820px; margin: 0 auto; padding: 32px 20px 64px; display: grid; gap: 28px; }
-h1 { font-family: var(--font-display); font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 700; line-height: 1.15; margin: 0; text-wrap: balance; }
-.eyebrow { font-family: var(--font-mono); font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; color: var(--brand); }
-header { display: grid; gap: 12px; }
-.lead { color: var(--muted); max-width: 65ch; margin: 0; }
-.note { background: var(--brand-soft); border-left: 4px solid var(--brand); padding: 10px 14px; border-radius: 6px; font-size: .92rem; max-width: 65ch; margin: 0; }
-ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
-.item {
-  display: flex; gap: 14px; align-items: center;
-  background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
-  padding: 14px 16px; text-decoration: none; color: var(--ink);
-  transition: border-color .15s;
+h1, h2 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.15; }
+h1 { font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 700; }
+h2 { font-size: 1.2rem; font-weight: 700; }
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: .78rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--brand-ink);
 }
-.item:hover { border-color: var(--accent); }
-.num { font-family: var(--font-mono); color: var(--accent); font-size: .9rem; flex: 0 0 auto; }
-.txt { display: grid; gap: 2px; flex: 1; min-width: 0; }
-.t { font-weight: 600; }
-.d { color: var(--muted); font-size: .9rem; }
-.qn { font-size: .8rem; color: var(--muted); white-space: nowrap; flex: 0 0 auto; }
+header { display: grid; gap: 12px; border-top: 6px solid var(--brand); padding-top: 18px; }
+.lead { color: var(--muted); max-width: 65ch; margin: 0; }
+.howto { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; color: var(--muted); font-size: .95rem; }
+.howto li { display: flex; gap: 10px; }
+.howto b { color: var(--brand-ink); font-weight: 600; }
+.stats { display: flex; flex-wrap: wrap; gap: 10px; }
+.stat {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+  padding: 8px 14px; display: grid;
+}
+.stat .v { font-family: var(--font-display); font-size: 1.4rem; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.stat .l { font-size: .8rem; color: var(--muted); }
+
+.stat-btn {
+  font: inherit; text-align: left; cursor: pointer; color: var(--accent);
+  background: var(--accent-soft); border-color: var(--accent);
+  transition: filter .15s;
+}
+.stat-btn .l { color: var(--accent); }
+.stat-btn:hover { filter: brightness(.95); }
+.stat-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.stat-btn .chev { display: inline-block; font-size: .8em; transition: transform .2s; }
+.stat-btn[aria-expanded="true"] .chev { transform: rotate(180deg); }
+.time[hidden] { display: none; }
+.time {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+  padding: 16px 18px; display: grid; gap: 12px;
+}
+.time-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.time-total { font-family: var(--font-display); font-weight: 700; color: var(--brand-ink); font-size: 1.1rem; }
+.time table { width: 100%; border-collapse: collapse; font-size: .92rem; font-variant-numeric: tabular-nums; }
+.time th, .time td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); }
+.time td { color: var(--muted); white-space: nowrap; }
+.time thead th { font-size: .74rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-family: var(--font-mono); }
+.time tbody th { font-weight: 500; }
+.time td:last-child { color: var(--ink); font-weight: 600; }
+.time tfoot th, .time tfoot td { border-bottom: 0; font-weight: 700; color: var(--ink); }
+.time-note { margin: 0; color: var(--muted); font-size: .85rem; max-width: 70ch; }
+@media (max-width: 480px) {
+  .time th, .time td { padding: 6px 4px; }
+}
+
+ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.item {
+  display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; align-items: start;
+  background: var(--surface); border: 1px solid var(--line); border-left: 5px solid var(--brand);
+  border-radius: 12px; padding: 16px 18px; text-decoration: none; color: var(--ink);
+  transition: border-color .15s, transform .15s;
+}
+.item:hover { border-color: var(--brand); transform: translateY(-1px); }
+.num { font-family: var(--font-mono); color: var(--brand-ink); font-size: 1.1rem; font-weight: 500; grid-row: span 3; padding-top: 2px; }
+.t { font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; line-height: 1.25; }
+.d { color: var(--muted); font-size: .93rem; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag {
+  font-size: .76rem; font-weight: 600; padding: 2px 9px; border-radius: 99px;
+  background: var(--brand-soft); color: var(--brand-ink);
+}
+.tag.plain { background: var(--bg); color: var(--muted); border: 1px solid var(--line); font-weight: 500; }
+.start {
+  justify-self: start; text-decoration: none; font-weight: 600;
+  padding: 10px 18px; border-radius: 8px; border: 1px solid var(--accent);
+  background: var(--accent); color: var(--on-accent);
+}
+.start:hover { filter: brightness(.92); }
 footer { color: var(--muted); font-size: .85rem; }
-@media (max-width: 560px) { .qn { display: none; } }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
 <body>
 <main class="wrap">
   <header>
-    <span class="eyebrow">Diagnóstico · nivel base</span>
-    <h1>¿Tienes claro SDD, ODD, agentes y arneses?</h1>
-    <p class="lead">33 preguntas cortas en 10 bloques, desde los fundamentos de los modelos de lenguaje hasta la seguridad de los agentes. Cada bloque tiene un resumen, un vídeo y sus preguntas. Al responder verás si has acertado y por qué, y si fallas te recomendamos qué repasar.</p>
-    <p class="note"><strong>Qué entendemos por ODD aquí:</strong> Organic Driven Development, el flujo de trabajo por defecto de Gentle AI (Gentleman Programming), que se compara con SDD. No confundir con Observability-Driven Development, que es otra práctica.</p>
+    <span class="eyebrow">Curso inicial · primer contacto</span>
+    <h1>Agentes, arneses, SDD y ODD</h1>
+    <p class="lead">Una primera toma de contacto para empezar a usar la IA como parte del trabajo diario. Son cuatro bloques cortos, cada uno con un resumen, uno o dos vídeos y unas preguntas tipo test para comprobar que los conceptos básicos han quedado claros.</p>
+    <ul class="howto">
+      <li><b>1.</b> Lee el resumen del bloque y mira el vídeo. Si vas justo de tiempo, usa los momentos clave para saltar a cada tema.</li>
+      <li><b>2.</b> Responde las preguntas. Si no sabes una, pulsa «No lo sé»: es mejor que adivinar.</li>
+      <li><b>3.</b> Cada pregunta te lleva al minuto del vídeo donde se explica, para repasarla.</li>
+    </ul>
   </header>
-  <ol>
-    <li><a class="item" href="01-fundamentos.html">
-      <span class="num">01</span>
-      <span class="txt"><span class="t">Fundamentos de los modelos de lenguaje</span><span class="d">Lo mínimo que hay que saber de un LLM antes de trabajar con agentes.</span></span>
-      <span class="qn">3 preguntas</span>
-    </a></li>
-    <li><a class="item" href="02-herramientas-mcp.html">
-      <span class="num">02</span>
-      <span class="txt"><span class="t">Herramientas y MCP</span><span class="d">Cómo un agente actúa sobre el mundo: llamadas a funciones y el protocolo estándar para conectarlas.</span></span>
-      <span class="qn">3 preguntas</span>
-    </a></li>
-    <li><a class="item" href="03-contexto.html">
-      <span class="num">03</span>
-      <span class="txt"><span class="t">Context engineering</span><span class="d">Decidir qué información ve el agente en cada momento, y qué no.</span></span>
-      <span class="qn">3 preguntas</span>
-    </a></li>
-    <li><a class="item" href="04-sdd.html">
-      <span class="num">04</span>
-      <span class="txt"><span class="t">SDD · Spec-Driven Development</span><span class="d">Desarrollo guiado por especificaciones: primero se acuerda qué construir y después el agente lo implementa.</span></span>
-      <span class="qn">3 preguntas</span>
-    </a></li>
-    <li><a class="item" href="05-odd.html">
-      <span class="num">05</span>
-      <span class="txt"><span class="t">ODD · Organic Driven Development</span><span class="d">El flujo por defecto de Gentle AI: ligero para lo que está claro, con registro recuperable para el trabajo grande.</span></span>
-      <span class="qn">3 preguntas</span>
-    </a></li>
-    <li><a class="item" href="06-odd-vs-sdd.html">
-      <span class="num">06</span>
-      <span class="txt"><span class="t">ODD vs SDD · cuándo usar cada uno</span><span class="d">Los dos hacen que el agente entienda antes de tocar código; cambia la ceremonia según el tamaño y la ambigüedad del trabajo.</span></span>
-      <span class="qn">3 preguntas</span>
-    </a></li>
-    <li><a class="item" href="07-agentes.html">
-      <span class="num">07</span>
-      <span class="txt"><span class="t">Agentes y orquestación</span><span class="d">Qué es un agente, cuándo merece la pena y cómo se coordinan varios.</span></span>
-      <span class="qn">5 preguntas</span>
-    </a></li>
-    <li><a class="item" href="08-arneses.html">
-      <span class="num">08</span>
-      <span class="txt"><span class="t">Arneses (harness engineering)</span><span class="d">Todo lo que rodea al modelo para que el agente sea fiable: herramientas, contexto, memoria, permisos y verificación.</span></span>
-      <span class="qn">4 preguntas</span>
-    </a></li>
-    <li><a class="item" href="09-evaluacion.html">
-      <span class="num">09</span>
-      <span class="txt"><span class="t">Evaluación y verificación</span><span class="d">Cómo saber si un agente funciona de verdad, más allá de la impresión.</span></span>
-      <span class="qn">3 preguntas</span>
-    </a></li>
-    <li><a class="item" href="10-seguridad.html">
-      <span class="num">10</span>
-      <span class="txt"><span class="t">Seguridad y control</span><span class="d">Qué puede salir mal cuando un agente actúa por su cuenta y cómo limitarlo.</span></span>
-      <span class="qn">3 preguntas</span>
-    </a></li>
-  </ol>
-  <footer>Los recursos recomendados son gratuitos. Puedes hacer los bloques en el orden que quieras.</footer>
+
+  <div class="stats" aria-label="El curso en cifras">
+    <div class="stat"><span class="v">4</span><span class="l">bloques</span></div>
+    <div class="stat"><span class="v">24</span><span class="l">preguntas</span></div>
+    <div class="stat"><span class="v">5</span><span class="l">vídeos</span></div>
+    <button class="stat stat-btn" id="time-btn" type="button" aria-expanded="false" aria-controls="time">
+      <span class="v">≈ 3 h <span class="chev" aria-hidden="true">▾</span></span><span class="l">duración estimada · ver detalle</span>
+    </button>
+  </div>
+
+  <section class="time" id="time" aria-labelledby="time-title" hidden>
+    <div class="time-head">
+      <h2 id="time-title">Cuánto tiempo necesitarás</h2>
+      <span class="time-total">≈ 3 horas en total</span>
+    </div>
+    <table>
+      <thead>
+        <tr><th scope="col">Bloque</th><th scope="col">Vídeos</th><th scope="col">Preguntas</th><th scope="col">Total</th></tr>
+      </thead>
+      <tbody>
+        <tr><th scope="row">01 · Agentes de IA</th><td>55 min</td><td>6 min</td><td>≈ 1 h</td></tr>
+        <tr><th scope="row">02 · Arneses</th><td>25 min</td><td>4 min</td><td>≈ 30 min</td></tr>
+        <tr><th scope="row">03 · SDD</th><td>48 min*</td><td>8 min</td><td>≈ 55 min</td></tr>
+        <tr><th scope="row">04 · ODD</th><td>28 min</td><td>6 min</td><td>≈ 35 min</td></tr>
+      </tbody>
+      <tfoot>
+        <tr><th scope="row">Total</th><td>2 h 36 min</td><td>24 min</td><td>≈ 3 h</td></tr>
+      </tfoot>
+    </table>
+    <p class="time-note">Calculamos 1 minuto por pregunta: leerla, responder y leer la explicación. * El vídeo de SDD dura unas 2 horas, pero la teoría está en los primeros 48 minutos y el resto es un ejemplo práctico. Si lo ves entero, el curso pasa a durar unas 4 horas y cuarto. No hace falta hacerlo de una vez: cada bloque se puede hacer en una sesión distinta.</p>
+  </section>
+
+  <section>
+    <ol>
+      <li><a class="item" href="01-agentes.html">
+        <span class="num">01</span>
+        <span class="t">Agentes de IA</span>
+        <span class="d">Qué es un agente, en qué se diferencia de un chat y qué lleva dentro: modelo, herramientas, skills y arnés.</span>
+        <span class="meta"><span class="tag">6 preguntas</span><span class="tag plain">Vídeo de EDteam · 55 min</span></span>
+      </a></li>
+      <li><a class="item" href="02-arneses.html">
+        <span class="num">02</span>
+        <span class="t">Arneses (harness engineering)</span>
+        <span class="d">Todo lo que rodea al modelo para que el agente sea fiable: contexto, herramientas, memoria y verificación.</span>
+        <span class="meta"><span class="tag">4 preguntas</span><span class="tag plain">Vídeo de BettaTech · 25 min</span></span>
+      </a></li>
+      <li><a class="item" href="03-sdd.html">
+        <span class="num">03</span>
+        <span class="t">SDD · Spec-Driven Development</span>
+        <span class="d">Escribir qué hay que construir y por qué antes de que la IA programe, y revisar cada paso.</span>
+        <span class="meta"><span class="tag">8 preguntas</span><span class="tag plain">Vídeo de MoureDev · teoría en 48 min</span></span>
+      </a></li>
+      <li><a class="item" href="04-odd.html">
+        <span class="num">04</span>
+        <span class="t">ODD · Organic Driven Development</span>
+        <span class="d">Un proceso que crece con el problema: ligero para lo pequeño y riguroso para lo arriesgado.</span>
+        <span class="meta"><span class="tag">6 preguntas</span><span class="tag plain">2 vídeos · 28 min en total</span></span>
+      </a></li>
+    </ol>
+  </section>
+
+  <a class="start" href="01-agentes.html">Empezar por el bloque 1 →</a>
+
+  <footer>Recomendamos seguir el orden de los bloques: cada uno se apoya en el anterior. Los vídeos son gratuitos y están en YouTube.</footer>
 </main>
+<script>
+  // Muestra u oculta el desglose de la duración estimada
+  (function () {
+    const btn = document.getElementById("time-btn");
+    const panel = document.getElementById("time");
+    const label = btn.querySelector(".l");
+    btn.addEventListener("click", () => {
+      const open = btn.getAttribute("aria-expanded") === "true";
+      btn.setAttribute("aria-expanded", open ? "false" : "true");
+      panel.hidden = open;
+      label.textContent = open ? "duración estimada · ver detalle" : "duración estimada · ocultar";
+    });
+  })();
+</script>
 </body>
 </html>
