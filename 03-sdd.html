@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bloque 3: SDD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+/* Una página por bloque: navegación, cabecera con resumen, vídeo con momentos clave, preguntas y resultado.
+   Mismos colores y tipografías que la primera versión del test. */
+:root {
+  --bg: #f3f3f3;
+  --surface: #ffffff;
+  --ink: #1c1c1c;
+  --muted: #5f5f5f;
+  --line: #dddddd;
+  --accent: #b5620a;
+  --accent-soft: #fbeedd;
+  --on-accent: #ffffff;
+  --brand: #ff002e;
+  --brand-ink: #d1002a;
+  --brand-soft: #ffe6ea;
+  --ok: #1d7a46;
+  --ok-soft: #e3f3e9;
+  --bad: #b3261e;
+  --bad-soft: #fbe6e4;
+  --unk: #6b5ca5;
+  --unk-soft: #eeebf8;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121212;
+    --surface: #1d1d1d;
+    --ink: #ececec;
+    --muted: #a6a6a6;
+    --line: #343434;
+    --accent: #f0a34a;
+    --accent-soft: #3a2a17;
+    --on-accent: #1a1206;
+    --brand: #ff002e;
+    --brand-ink: #ff6680;
+    --brand-soft: #3a1219;
+    --ok: #5fcf8d;
+    --ok-soft: #173326;
+    --bad: #f08a82;
+    --bad-soft: #3a1d1b;
+    --unk: #b3a6ec;
+    --unk-soft: #26213d;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121212;
+  --surface: #1d1d1d;
+  --ink: #ececec;
+  --muted: #a6a6a6;
+  --line: #343434;
+  --accent: #f0a34a;
+  --accent-soft: #3a2a17;
+  --on-accent: #1a1206;
+  --brand: #ff002e;
+  --brand-ink: #ff6680;
+  --brand-soft: #3a1219;
+  --ok: #5fcf8d;
+  --ok-soft: #173326;
+  --bad: #f08a82;
+  --bad-soft: #3a1d1b;
+  --unk: #b3a6ec;
+  --unk-soft: #26213d;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.55;
+}
+a { color: var(--brand-ink); }
+a:focus-visible, button:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+.wrap {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 24px 20px 64px;
+  display: grid;
+  gap: 28px;
+}
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.15; }
+h1 { font-size: clamp(1.7rem, 4vw, 2.3rem); font-weight: 700; }
+h2 { font-size: 1.45rem; font-weight: 700; }
+h3 { font-size: 1.05rem; font-weight: 600; font-family: var(--font-body); line-height: 1.4; }
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: .78rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--brand-ink);
+}
+
+/* Navegación entre bloques */
+.blocknav { display: flex; flex-wrap: wrap; gap: 6px; }
+.blocknav a, .blocknav span {
+  font-size: .8rem; text-decoration: none; color: var(--muted);
+  padding: 3px 10px; border-radius: 99px; border: 1px solid var(--line);
+  background: var(--surface);
+}
+.blocknav .n { font-family: var(--font-mono); margin-right: 4px; border: 0; padding: 0; background: none; color: inherit; }
+.blocknav a:hover { border-color: var(--accent); color: var(--ink); }
+.blocknav a[aria-current="page"] { background: var(--brand); border-color: var(--brand); color: #ffffff; font-weight: 600; }
+.blocknav .soon { opacity: .6; border-style: dashed; }
+
+/* Cabecera del bloque */
+.hero {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 22px 22px 20px;
+  display: grid;
+  gap: 14px;
+}
+.hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+.hero-title { display: grid; gap: 6px; flex: 1 1 320px; }
+.summary-text { margin: 0; color: var(--muted); max-width: 68ch; }
+.topics { margin: 0; padding-left: 1.2em; display: grid; gap: 4px; color: var(--ink); font-size: .95rem; max-width: 68ch; }
+.topics-title { font-weight: 600; font-size: .92rem; margin: 0; }
+.video-btn {
+  flex: 0 0 auto;
+  font: inherit; font-weight: 600; font-size: .92rem;
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 9px 16px; border-radius: 99px; cursor: pointer;
+  border: 1px solid var(--accent);
+  background: var(--accent); color: var(--on-accent);
+}
+.video-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: 14px; }
+.video-info { color: var(--muted); font-size: .88rem; }
+.video-btn[aria-expanded="true"] { background: transparent; color: var(--accent); }
+.video-btn svg { width: 14px; height: 14px; fill: currentColor; }
+
+.player { display: grid; gap: 10px; scroll-margin-top: 12px; }
+.player[hidden] { display: none; }
+.frame {
+  position: relative; width: 100%; aspect-ratio: 16 / 9;
+  border-radius: 10px; overflow: hidden; background: #000;
+}
+.frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.vmeta { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: .88rem; }
+.vmeta .vt { font-weight: 600; }
+.vmeta .vd { color: var(--muted); display: block; }
+.vmeta a { white-space: nowrap; }
+.chapters { display: grid; gap: 6px; }
+.chapters-title { font-size: .85rem; font-weight: 600; }
+.chapter-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.chapter {
+  font: inherit; font-size: .82rem; cursor: pointer;
+  display: inline-flex; gap: 6px; align-items: baseline;
+  padding: 4px 11px; border-radius: 99px;
+  border: 1px solid var(--line); background: var(--bg); color: var(--ink);
+}
+.chapter .ts { font-family: var(--font-mono); font-size: .76rem; color: var(--accent); }
+.chapter:hover { border-color: var(--accent); }
+.chapter[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+
+/* Progreso */
+.progress-line { display: flex; align-items: center; gap: 12px; }
+.progress { flex: 1; height: 8px; border-radius: 99px; background: var(--line); overflow: hidden; }
+.progress > span { display: block; height: 100%; width: 0; background: var(--accent); transition: width .3s ease; }
+.count { font-variant-numeric: tabular-nums; color: var(--muted); font-size: .88rem; white-space: nowrap; }
+
+/* Preguntas */
+.qs { display: grid; gap: 14px; }
+.q {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 18px;
+  display: grid;
+  gap: 12px;
+  border-left: 5px solid var(--line);
+}
+.q.is-ok { border-left-color: var(--ok); }
+.q.is-bad { border-left-color: var(--bad); }
+.q.is-unk { border-left-color: var(--unk); }
+.q-num { font-family: var(--font-mono); font-size: .78rem; color: var(--muted); }
+.opts { display: grid; gap: 8px; }
+.opt {
+  font: inherit;
+  text-align: left;
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--ink);
+  cursor: pointer;
+  display: flex; gap: 10px; align-items: flex-start;
+  transition: border-color .15s, background .15s;
+}
+.opt .letter {
+  font-family: var(--font-mono);
+  font-size: .8rem;
+  flex: 0 0 auto;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  display: inline-grid; place-items: center;
+  margin-top: 1px;
+  color: var(--muted);
+}
+.opt:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
+.opt:disabled { cursor: default; }
+.opt.correct { border-color: var(--ok); background: var(--ok-soft); }
+.opt.correct .letter { border-color: var(--ok); color: var(--ok); }
+.opt.chosen-wrong { border-color: var(--bad); background: var(--bad-soft); }
+.opt.chosen-wrong .letter { border-color: var(--bad); color: var(--bad); }
+.opt.faded { opacity: .55; }
+.unknown-btn {
+  justify-self: start;
+  font: inherit; font-size: .9rem;
+  background: none; border: 1px dashed var(--unk); color: var(--unk);
+  padding: 6px 12px; border-radius: 8px; cursor: pointer;
+}
+.unknown-btn:hover:not(:disabled) { background: var(--unk-soft); }
+.unknown-btn:disabled { opacity: .4; cursor: default; }
+
+.fb { border-radius: 8px; padding: 12px 14px; font-size: .95rem; display: grid; gap: 8px; }
+.fb[hidden] { display: none; }
+.fb.ok { background: var(--ok-soft); }
+.fb.bad { background: var(--bad-soft); }
+.fb.unk { background: var(--unk-soft); }
+.fb .verdict { font-weight: 600; }
+.fb.ok .verdict { color: var(--ok); }
+.fb.bad .verdict { color: var(--bad); }
+.fb.unk .verdict { color: var(--unk); }
+.fb p { margin: 0; }
+.jump {
+  justify-self: start;
+  font: inherit; font-size: .88rem; font-weight: 600; cursor: pointer;
+  display: inline-flex; gap: 8px; align-items: center;
+  padding: 6px 12px; border-radius: 8px;
+  border: 1px solid var(--accent); background: var(--surface); color: var(--accent);
+}
+.jump:hover { background: var(--accent-soft); }
+.jump svg { width: 12px; height: 12px; fill: currentColor; }
+
+/* Resultado */
+.results {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 22px 20px;
+  display: grid;
+  gap: 18px;
+}
+.score-line { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.big { font-family: var(--font-display); font-size: 2.6rem; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; }
+.big small { font-size: 1.1rem; color: var(--muted); font-weight: 500; }
+.overall { font-weight: 600; }
+.plan { display: grid; gap: 8px; }
+.plan h3 { font-family: var(--font-display); font-size: 1.05rem; }
+.plan-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.empty { color: var(--muted); font-size: .95rem; margin: 0; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.btn {
+  font: inherit; font-weight: 600; font-size: .95rem;
+  padding: 9px 16px; border-radius: 8px; cursor: pointer;
+  border: 1px solid var(--accent);
+  background: var(--accent); color: var(--on-accent);
+}
+.btn.ghost { background: transparent; color: var(--accent); }
+.status { font-size: .88rem; color: var(--muted); }
+
+.pager { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.pager > * {
+  display: grid; gap: 2px; text-decoration: none; color: var(--ink);
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+  padding: 10px 14px; min-width: 0; flex: 1 1 220px;
+}
+.pager a:hover { border-color: var(--accent); }
+.pager .next { text-align: right; }
+.pager .soon { opacity: .6; border-style: dashed; }
+.pager .dir { font-family: var(--font-mono); font-size: .75rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+footer { color: var(--muted); font-size: .85rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; scroll-behavior: auto !important; }
+}
+</style>
+</head>
+<body>
+<main class="wrap">
+
+  <nav class="blocknav" aria-label="Bloques del curso">
+    <a href="index.html"><span class="n">←</span>Inicio</a>
+    <a href="01-agentes.html"><span class="n">01</span>Agentes</a>
+    <a href="02-arneses.html"><span class="n">02</span>Arneses</a>
+    <a href="03-sdd.html" aria-current="page"><span class="n">03</span>SDD</a>
+    <a href="04-odd.html"><span class="n">04</span>ODD</a>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-top">
+      <div class="hero-title">
+        <span class="eyebrow">Bloque 3 de 4 · primer contacto</span>
+        <h1>SDD · Spec-Driven Development</h1>
+      </div>
+    </div>
+
+    <p class="summary-text">Cuando le pides algo a un agente con un prompt rápido, el resultado depende de lo que decida la IA: si le pides lo mismo diez veces, te dará diez soluciones distintas. El Spec-Driven Development (desarrollo guiado por especificaciones) pone orden: antes de que la IA escriba código, se acuerda por escrito qué hay que construir y por qué. No es un invento nuevo, sino el ciclo de desarrollo de siempre, con la IA haciendo parte del trabajo y una persona revisando cada paso.</p>
+    <p class="topics-title">Qué trabajaremos</p>
+    <ul class="topics">
+      <li>Qué es SDD y en qué se diferencia del vibe coding.</li>
+      <li>Qué es una especificación y qué debe contar (y qué no).</li>
+      <li>La constitución del proyecto y el fichero AGENTS.md.</li>
+      <li>El flujo: constitución, especificación, clarificación, plan, tareas, implementación y validación.</li>
+      <li>Por qué la persona sigue siendo responsable de revisar lo que hace la IA.</li>
+    </ul>
+
+    <div class="video-bar">
+      <button class="video-btn" id="video-btn" type="button" aria-expanded="false" aria-controls="player">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z"/></svg>
+        <span id="video-btn-label">Ver vídeo</span>
+      </button>
+      <span class="video-info">El fin del vibe coding · MoureDev · unas 2 horas (teoría en los primeros 48 min)</span>
+    </div>
+
+    <div class="player" id="player" hidden>
+      <div class="frame" id="frame"></div>
+      <div class="vmeta">
+        <span><span class="vt">El fin del vibe coding: crea software robusto con este método</span><span class="vd">MoureDev (Brais Moure) · unas 2 horas · la teoría ocupa los primeros 48 minutos y después hay un ejemplo práctico</span></span>
+        <a href="https://www.youtube.com/watch?v=5HaOxAAA5qI" target="_blank" rel="noopener">Abrir en YouTube ↗</a>
+      </div>
+      <div class="chapters">
+        <span class="chapters-title">Momentos clave (pulsa para saltar a ese minuto)</span>
+        <div class="chapter-list" id="chapters"></div>
+      </div>
+    </div>
+
+    <div class="progress-line">
+      <div class="progress" aria-hidden="true"><span id="progress-bar"></span></div>
+      <span class="count" id="count"></span>
+    </div>
+  </header>
+
+  <section class="qs" id="qs" aria-label="Preguntas"></section>
+
+  <section class="results" aria-live="polite">
+    <div>
+      <span class="eyebrow" id="res-eyebrow"></span>
+      <h2>Tu resultado</h2>
+    </div>
+    <div class="score-line">
+      <span class="big" id="score"></span>
+      <span class="overall" id="overall"></span>
+    </div>
+    <div class="plan">
+      <h3>Qué repasar en el vídeo</h3>
+      <div id="plan"></div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="copy" type="button">Copiar resumen</button>
+      <button class="btn ghost" id="reset" type="button">Empezar de nuevo</button>
+      <span class="status" id="status" role="status"></span>
+    </div>
+  </section>
+
+  <nav class="pager" aria-label="Bloque anterior y siguiente">
+    <a href="02-arneses.html" class="prev"><span class="dir">← Anterior</span><span>Arneses</span></a>
+    <a href="04-odd.html" class="next"><span class="dir">Siguiente →</span><span>ODD</span></a>
+  </nav>
+
+  <footer>Vídeo de MoureDev en YouTube. Si no se reproduce dentro de la página, usa «Abrir en YouTube».</footer>
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  const VIDEO_ID = "5HaOxAAA5qI";
+  const VIDEO_URL = "https://www.youtube.com/watch?v=" + VIDEO_ID;
+  const BLOCK_TITLE = "SDD · Spec-Driven Development";
+
+  const CHAPTERS = [
+    { t: 539, label: "Qué es SDD" },
+    { t: 697, label: "El problema del vibe coding" },
+    { t: 887, label: "Por qué la IA necesita especificaciones" },
+    { t: 1132, label: "SDD y el ciclo de desarrollo de siempre" },
+    { t: 1695, label: "Tres formas de hacer SDD" },
+    { t: 2018, label: "Frameworks: Spec Kit, OpenSpec, BMAD" },
+    { t: 2527, label: "AGENTS.md y qué lleva una especificación" },
+    { t: 2800, label: "El flujo de SDD y el modo plan" },
+    { t: 2910, label: "Práctica: un proyecto paso a paso" },
+    { t: 7026, label: "Resumen final" }
+  ];
+
+  // La primera opción de cada lista es la correcta; se barajan al mostrarlas.
+  // t = segundo del vídeo donde se explica.
+  const QS = [
+    {
+      q: "¿Qué es, en esencia, el Spec-Driven Development (SDD)?",
+      opts: [
+        "Una forma de trabajar con IA en la que, antes de generar código, se escribe una especificación de qué hay que construir y por qué, y esa especificación guía al agente",
+        "Un programa que hay que instalar en el editor para que los agentes de IA puedan escribir código",
+        "Pedirle a la IA lo que necesitas con prompts rápidos e ir corrigiendo hasta que el resultado funcione",
+        "Pedirle a la IA que documente el código una vez que ya ha terminado de escribirlo"
+      ],
+      expl: "Si le pides a un agente «quiero un login» sin más, hará el login que le parezca, y diez peticiones darán diez resultados distintos. La especificación reduce esa incertidumbre: el agente sabe exactamente qué tiene que construir.",
+      t: 539
+    },
+    {
+      q: "¿Cuándo tiene sentido el vibe coding, es decir, programar a base de prompts «dejándose llevar»?",
+      opts: [
+        "En prototipos, pruebas o herramientas de uso propio y corta vida; para software profesional que hay que mantener, falta control",
+        "En los proyectos grandes de empresa, porque es la forma más rápida de entregar",
+        "Nunca: cualquier uso de la IA sin una especificación previa es un error",
+        "Solo cuando la persona no sabe programar, porque así no necesita revisar nada"
+      ],
+      expl: "El vibe coding es rápido y está bien para explorar o para algo de usar y tirar. Pero sin requisitos no hay forma de saber si el resultado es correcto, se acumulan fallos de seguridad y deuda técnica, y no escala a equipos ni a clientes.",
+      t: 1308
+    },
+    {
+      q: "¿Es el SDD una forma de trabajar completamente nueva?",
+      opts: [
+        "No: sigue el ciclo de desarrollo de siempre (planificar, analizar, diseñar, implementar y probar); lo nuevo es que la IA hace parte del trabajo",
+        "Sí: nació en 2025 junto con los agentes de IA y no se parece a nada anterior",
+        "Sí: sustituye el ciclo de desarrollo clásico por un único prompt muy detallado",
+        "No: es otro nombre para el vibe coding, con la diferencia de que se usan agentes"
+      ],
+      expl: "Antes de la IA, a un programador le llegaba una especificación escrita por alguien que conocía el negocio, y a partir de ella diseñaba, programaba y probaba. SDD hace lo mismo: la planificación pasa a ser la constitución, el análisis la especificación, y la IA se encarga de buena parte de la implementación.",
+      t: 1132
+    },
+    {
+      q: "¿Qué debe contar una especificación?",
+      opts: [
+        "El qué y el por qué: contexto, historias de usuario, requisitos, casos límite, lo que queda fuera y cuándo se da por terminada",
+        "El cómo: el lenguaje, las librerías y la estructura de carpetas que tendrá el código",
+        "El código ya escrito, para que la IA solo tenga que revisarlo y corregirlo",
+        "Un resumen de las conversaciones que has tenido con el agente hasta ahora"
+      ],
+      expl: "El código es el cómo; la especificación es la intención. Las decisiones técnicas llegan después, en el plan. Se suele escribir en Markdown, y la propia IA puede ayudarte a redactarla haciéndote preguntas para eliminar ambigüedades.",
+      t: 2636
+    },
+    {
+      q: "¿Qué es la «constitución» en un proyecto con SDD?",
+      opts: [
+        "Los principios innegociables del proyecto: se escriben una vez y todas las especificaciones, planes y tareas deben cumplirlos",
+        "Un documento que se vuelve a escribir para cada funcionalidad nueva que se quiere añadir",
+        "La lista de tareas que el agente tiene que ir completando una a una",
+        "El contrato firmado con el cliente que encarga el proyecto"
+      ],
+      expl: "Por ejemplo: qué tecnologías se usan, cómo se separa la lógica de la interfaz, qué tests son obligatorios o en qué idioma van los mensajes. Junto con el AGENTS.md, que el agente lee antes de empezar, marca las reglas del juego para todo lo que venga después.",
+      t: 3655
+    },
+    {
+      q: "¿Cuál es el orden habitual del flujo de SDD?",
+      opts: [
+        "Constitución → especificación → clarificación → plan → tareas → implementación → validación",
+        "Implementación → especificación → validación → plan → tareas → constitución",
+        "Plan → implementación → constitución → especificación → validación → tareas",
+        "Tareas → implementación → especificación → clarificación → constitución → plan"
+      ],
+      expl: "Primero se fijan las reglas (constitución), luego qué se quiere (especificación), se aclaran las dudas, se decide cómo hacerlo (plan), se divide en tareas pequeñas y solo entonces la IA programa. Al final se valida requisito por requisito. Para la siguiente funcionalidad se vuelve a empezar desde la especificación.",
+      t: 2800
+    },
+    {
+      q: "Spec Kit, OpenSpec, BMAD… ¿Hace falta usar uno de estos frameworks para hacer SDD?",
+      opts: [
+        "No: por dentro son prompts y skills que automatizan el flujo; lo importante es entender el método",
+        "Sí: sin uno de estos frameworks no se puede aplicar SDD",
+        "Sí: hay que usar el de GitHub, porque es el estándar oficial de la industria",
+        "No, porque SDD solo funciona con un agente de IA concreto"
+      ],
+      expl: "Las herramientas cambian y muchas desaparecen; el método se queda. Si entiendes el flujo, puedes aplicarlo con cualquier agente (Claude Code, Copilot, Cursor…), con un framework o con tus propias skills. Usar un framework sin entender SDD es copiar y pegar sin saber qué pasa.",
+      t: 2140
+    },
+    {
+      q: "Si la IA redacta la especificación, el plan, las tareas y el código, ¿qué papel tiene la persona?",
+      opts: [
+        "Revisar antes y después de cada paso: validar lo que propone la IA y comprobar la especificación, el código y los tests",
+        "Ninguno: si el flujo está bien montado, se puede dar por bueno todo lo que genere la IA",
+        "Solo escribir el primer prompt; a partir de ahí el agente se encarga de todo",
+        "Solo revisar el código final, sin mirar la especificación ni el plan"
+      ],
+      expl: "Es lo que se llama human in the loop. El modo plan hace que el agente explique qué va a hacer antes de tocar nada, y tú decides si sigue. La IA se puede equivocar, y si algo falla, quien responde ante el equipo o el cliente eres tú, no la herramienta.",
+      t: 7026
+    }
+  ];
+
+  const TOTAL = QS.length;
+  const answers = {}; // índice -> "ok" | "bad" | "unk"
+  const LETTERS = ["A", "B", "C", "D", "E"];
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function el(tag, attrs, children) {
+    const node = document.createElement(tag);
+    if (attrs) {
+      for (const k in attrs) {
+        if (k === "class") node.className = attrs[k];
+        else if (k === "text") node.textContent = attrs[k];
+        else node.setAttribute(k, attrs[k]);
+      }
+    }
+    (children || []).forEach(c => { if (c) node.appendChild(typeof c === "string" ? document.createTextNode(c) : c); });
+    return node;
+  }
+
+  function mmss(s) {
+    const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), sec = String(s % 60).padStart(2, "0");
+    return h ? h + ":" + String(m).padStart(2, "0") + ":" + sec : String(m).padStart(2, "0") + ":" + sec;
+  }
+
+  function playIcon() {
+    const s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    s.setAttribute("viewBox", "0 0 16 16");
+    s.setAttribute("aria-hidden", "true");
+    const p = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    p.setAttribute("d", "M4 2.5v11l9-5.5z");
+    s.appendChild(p);
+    return s;
+  }
+
+  // ---------- Vídeo ----------
+  const videoBtn = document.getElementById("video-btn");
+  const videoLabel = document.getElementById("video-btn-label");
+  const player = document.getElementById("player");
+  const frame = document.getElementById("frame");
+  const chaptersEl = document.getElementById("chapters");
+
+  function loadVideo(start) {
+    frame.innerHTML = "";
+    frame.appendChild(el("iframe", {
+      src: "https://www.youtube-nocookie.com/embed/" + VIDEO_ID + "?rel=0&autoplay=1" + (start ? "&start=" + start : ""),
+      title: "El fin del vibe coding (MoureDev)",
+      allow: "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share",
+      referrerpolicy: "strict-origin-when-cross-origin",
+      allowfullscreen: ""
+    }));
+    chaptersEl.querySelectorAll(".chapter").forEach(c => c.setAttribute("aria-pressed", Number(c.dataset.t) === start ? "true" : "false"));
+  }
+
+  function openVideo(start) {
+    videoBtn.setAttribute("aria-expanded", "true");
+    videoLabel.textContent = "Ocultar vídeo";
+    player.hidden = false;
+    loadVideo(start || 0);
+  }
+
+  function closeVideo() {
+    videoBtn.setAttribute("aria-expanded", "false");
+    videoLabel.textContent = "Ver vídeo";
+    player.hidden = true;
+    frame.innerHTML = ""; // al cerrar se quita el iframe para detener la reproducción
+  }
+
+  // Abre el vídeo en un minuto concreto y sube hasta él
+  function jumpTo(start) {
+    openVideo(start);
+    player.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  CHAPTERS.forEach(c => {
+    const b = el("button", { class: "chapter", type: "button", "aria-pressed": "false" }, [
+      el("span", { class: "ts", text: mmss(c.t) }), c.label
+    ]);
+    b.dataset.t = c.t;
+    b.addEventListener("click", () => loadVideo(c.t));
+    chaptersEl.appendChild(b);
+  });
+
+  videoBtn.addEventListener("click", () => {
+    if (videoBtn.getAttribute("aria-expanded") === "true") closeVideo();
+    else openVideo(0);
+  });
+
+  function jumpButton(t, text) {
+    const b = el("button", { class: "jump", type: "button" }, [playIcon(), text]);
+    b.addEventListener("click", () => jumpTo(t));
+    return b;
+  }
+
+  // ---------- Preguntas ----------
+  const qsEl = document.getElementById("qs");
+
+  function render() {
+    qsEl.innerHTML = "";
+    QS.forEach((item, idx) => {
+      const card = el("article", { class: "q" });
+      card.appendChild(el("span", { class: "q-num", text: "Pregunta " + (idx + 1) + " de " + TOTAL }));
+      card.appendChild(el("h3", { text: item.q }));
+
+      const optsWrap = el("div", { class: "opts", role: "group", "aria-label": "Opciones" });
+      shuffle(item.opts).forEach((text, i) => {
+        const btn = el("button", { class: "opt", type: "button" }, [
+          el("span", { class: "letter", text: LETTERS[i] }),
+          el("span", { text: text })
+        ]);
+        btn.dataset.correct = text === item.opts[0] ? "1" : "0";
+        btn.addEventListener("click", () => answer(idx, item, card, btn));
+        optsWrap.appendChild(btn);
+      });
+      card.appendChild(optsWrap);
+
+      const unk = el("button", { class: "unknown-btn", type: "button", text: "No lo sé" });
+      unk.addEventListener("click", () => answer(idx, item, card, null));
+      card.appendChild(unk);
+      card.appendChild(el("div", { class: "fb", hidden: "" }));
+      qsEl.appendChild(card);
+    });
+    update();
+  }
+
+  function answer(idx, item, card, chosenBtn) {
+    if (answers[idx]) return;
+    const status = chosenBtn === null ? "unk" : (chosenBtn.dataset.correct === "1" ? "ok" : "bad");
+    answers[idx] = status;
+
+    card.querySelectorAll(".opt").forEach(b => {
+      b.disabled = true;
+      if (b.dataset.correct === "1") b.classList.add("correct");
+      else if (b === chosenBtn) b.classList.add("chosen-wrong");
+      else b.classList.add("faded");
+    });
+    card.querySelector(".unknown-btn").disabled = true;
+    card.classList.add("is-" + status);
+
+    const fb = card.querySelector(".fb");
+    fb.hidden = false;
+    fb.className = "fb " + status;
+    fb.innerHTML = "";
+    const verdicts = { ok: "Correcto.", bad: "No es correcta.", unk: "Sin problema, para eso está el repaso." };
+    fb.appendChild(el("p", { class: "verdict", text: verdicts[status] }));
+    if (status !== "ok") fb.appendChild(el("p", { text: "Respuesta correcta: " + item.opts[0] + "." }));
+    fb.appendChild(el("p", { text: item.expl }));
+    fb.appendChild(jumpButton(item.t, (status === "ok" ? "Verlo en el vídeo" : "Repásalo en el vídeo") + " (" + mmss(item.t) + ")"));
+    update();
+  }
+
+  // ---------- Resultado ----------
+  function update() {
+    const vals = Object.values(answers);
+    const answered = vals.length;
+    const ok = vals.filter(s => s === "ok").length;
+    const done = answered === TOTAL;
+
+    document.getElementById("count").textContent = answered + " de " + TOTAL + " respondidas";
+    document.getElementById("progress-bar").style.width = (answered / TOTAL * 100) + "%";
+    const score = document.getElementById("score");
+    score.innerHTML = "";
+    score.append(String(ok), el("small", { text: " / " + TOTAL }));
+    document.getElementById("res-eyebrow").textContent = done ? "Resultado del bloque" : "Resultado provisional · " + answered + " de " + TOTAL;
+
+    const overall = document.getElementById("overall");
+    if (answered === 0) overall.textContent = "Responde las preguntas para ver tu resultado.";
+    else if (!done) overall.textContent = "Te quedan " + (TOTAL - answered) + " preguntas.";
+    else overall.textContent = ok === TOTAL ? "Bloque dominado. Ya tienes clara la base de SDD."
+      : ok / TOTAL >= 0.6 ? "Buena base. Repasa en el vídeo los momentos de abajo."
+      : "Te recomendamos ver el vídeo completo y volver a intentarlo.";
+
+    const plan = document.getElementById("plan");
+    plan.innerHTML = "";
+    const misses = QS.map((item, idx) => ({ item, idx })).filter(x => answers[x.idx] && answers[x.idx] !== "ok");
+    if (misses.length) {
+      const list = el("div", { class: "plan-list" });
+      misses.forEach(x => list.appendChild(jumpButton(x.item.t, mmss(x.item.t) + " · Pregunta " + (x.idx + 1))));
+      plan.appendChild(list);
+    } else {
+      plan.appendChild(el("p", { class: "empty", text: answered === 0
+        ? "Aquí aparecerán los minutos del vídeo que explican las preguntas que falles o marques como «No lo sé»."
+        : "De momento no tienes nada que repasar." }));
+    }
+  }
+
+  function summaryText() {
+    const vals = Object.values(answers);
+    const ok = vals.filter(s => s === "ok").length;
+    const lines = [
+      "Curso inicial · Bloque 3: " + BLOCK_TITLE,
+      "Fecha: " + new Date().toLocaleDateString("es-ES"),
+      "Resultado: " + ok + "/" + TOTAL + " aciertos (" + vals.length + "/" + TOTAL + " respondidas)"
+    ];
+    const misses = QS.map((item, idx) => ({ item, idx })).filter(x => answers[x.idx] && answers[x.idx] !== "ok");
+    if (misses.length) {
+      lines.push("", "Para repasar en el vídeo (" + VIDEO_URL + "):");
+      misses.forEach(x => lines.push("- " + mmss(x.item.t) + " · " + x.item.q));
+    }
+    return lines.join("\n");
+  }
+
+  document.getElementById("copy").addEventListener("click", () => {
+    const status = document.getElementById("status");
+    try {
+      navigator.clipboard.writeText(summaryText()).then(
+        () => { status.textContent = "Resumen copiado."; },
+        () => { status.textContent = "No se pudo copiar. Selecciona el texto del resultado y cópialo a mano."; }
+      );
+    } catch (e) {
+      status.textContent = "No se pudo copiar. Selecciona el texto del resultado y cópialo a mano.";
+    }
+  });
+
+  document.getElementById("reset").addEventListener("click", () => {
+    Object.keys(answers).forEach(k => delete answers[k]);
+    document.getElementById("status").textContent = "";
+    render();
+    window.scrollTo(0, 0);
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

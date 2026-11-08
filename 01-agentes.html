@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bloque 1: Agentes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+/* Una página por bloque: navegación, cabecera con resumen, vídeo con momentos clave, preguntas y resultado.
+   Mismos colores y tipografías que la primera versión del test. */
+:root {
+  --bg: #f3f3f3;
+  --surface: #ffffff;
+  --ink: #1c1c1c;
+  --muted: #5f5f5f;
+  --line: #dddddd;
+  --accent: #b5620a;
+  --accent-soft: #fbeedd;
+  --on-accent: #ffffff;
+  --brand: #ff002e;
+  --brand-ink: #d1002a;
+  --brand-soft: #ffe6ea;
+  --ok: #1d7a46;
+  --ok-soft: #e3f3e9;
+  --bad: #b3261e;
+  --bad-soft: #fbe6e4;
+  --unk: #6b5ca5;
+  --unk-soft: #eeebf8;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121212;
+    --surface: #1d1d1d;
+    --ink: #ececec;
+    --muted: #a6a6a6;
+    --line: #343434;
+    --accent: #f0a34a;
+    --accent-soft: #3a2a17;
+    --on-accent: #1a1206;
+    --brand: #ff002e;
+    --brand-ink: #ff6680;
+    --brand-soft: #3a1219;
+    --ok: #5fcf8d;
+    --ok-soft: #173326;
+    --bad: #f08a82;
+    --bad-soft: #3a1d1b;
+    --unk: #b3a6ec;
+    --unk-soft: #26213d;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121212;
+  --surface: #1d1d1d;
+  --ink: #ececec;
+  --muted: #a6a6a6;
+  --line: #343434;
+  --accent: #f0a34a;
+  --accent-soft: #3a2a17;
+  --on-accent: #1a1206;
+  --brand: #ff002e;
+  --brand-ink: #ff6680;
+  --brand-soft: #3a1219;
+  --ok: #5fcf8d;
+  --ok-soft: #173326;
+  --bad: #f08a82;
+  --bad-soft: #3a1d1b;
+  --unk: #b3a6ec;
+  --unk-soft: #26213d;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.55;
+}
+a { color: var(--brand-ink); }
+a:focus-visible, button:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+.wrap {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 24px 20px 64px;
+  display: grid;
+  gap: 28px;
+}
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.15; }
+h1 { font-size: clamp(1.7rem, 4vw, 2.3rem); font-weight: 700; }
+h2 { font-size: 1.45rem; font-weight: 700; }
+h3 { font-size: 1.05rem; font-weight: 600; font-family: var(--font-body); line-height: 1.4; }
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: .78rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--brand-ink);
+}
+
+/* Navegación entre bloques */
+.blocknav { display: flex; flex-wrap: wrap; gap: 6px; }
+.blocknav a, .blocknav span {
+  font-size: .8rem; text-decoration: none; color: var(--muted);
+  padding: 3px 10px; border-radius: 99px; border: 1px solid var(--line);
+  background: var(--surface);
+}
+.blocknav .n { font-family: var(--font-mono); margin-right: 4px; border: 0; padding: 0; background: none; color: inherit; }
+.blocknav a:hover { border-color: var(--accent); color: var(--ink); }
+.blocknav a[aria-current="page"] { background: var(--brand); border-color: var(--brand); color: #ffffff; font-weight: 600; }
+.blocknav .soon { opacity: .6; border-style: dashed; }
+
+/* Cabecera del bloque */
+.hero {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 22px 22px 20px;
+  display: grid;
+  gap: 14px;
+}
+.hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+.hero-title { display: grid; gap: 6px; flex: 1 1 320px; }
+.summary-text { margin: 0; color: var(--muted); max-width: 68ch; }
+.topics { margin: 0; padding-left: 1.2em; display: grid; gap: 4px; color: var(--ink); font-size: .95rem; max-width: 68ch; }
+.topics-title { font-weight: 600; font-size: .92rem; margin: 0; }
+.video-btn {
+  flex: 0 0 auto;
+  font: inherit; font-weight: 600; font-size: .92rem;
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 9px 16px; border-radius: 99px; cursor: pointer;
+  border: 1px solid var(--accent);
+  background: var(--accent); color: var(--on-accent);
+}
+.video-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: 14px; }
+.video-info { color: var(--muted); font-size: .88rem; }
+.video-btn[aria-expanded="true"] { background: transparent; color: var(--accent); }
+.video-btn svg { width: 14px; height: 14px; fill: currentColor; }
+
+.player { display: grid; gap: 10px; scroll-margin-top: 12px; }
+.player[hidden] { display: none; }
+.frame {
+  position: relative; width: 100%; aspect-ratio: 16 / 9;
+  border-radius: 10px; overflow: hidden; background: #000;
+}
+.frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.vmeta { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: .88rem; }
+.vmeta .vt { font-weight: 600; }
+.vmeta .vd { color: var(--muted); display: block; }
+.vmeta a { white-space: nowrap; }
+.chapters { display: grid; gap: 6px; }
+.chapters-title { font-size: .85rem; font-weight: 600; }
+.chapter-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.chapter {
+  font: inherit; font-size: .82rem; cursor: pointer;
+  display: inline-flex; gap: 6px; align-items: baseline;
+  padding: 4px 11px; border-radius: 99px;
+  border: 1px solid var(--line); background: var(--bg); color: var(--ink);
+}
+.chapter .ts { font-family: var(--font-mono); font-size: .76rem; color: var(--accent); }
+.chapter:hover { border-color: var(--accent); }
+.chapter[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+
+/* Progreso */
+.progress-line { display: flex; align-items: center; gap: 12px; }
+.progress { flex: 1; height: 8px; border-radius: 99px; background: var(--line); overflow: hidden; }
+.progress > span { display: block; height: 100%; width: 0; background: var(--accent); transition: width .3s ease; }
+.count { font-variant-numeric: tabular-nums; color: var(--muted); font-size: .88rem; white-space: nowrap; }
+
+/* Preguntas */
+.qs { display: grid; gap: 14px; }
+.q {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 18px;
+  display: grid;
+  gap: 12px;
+  border-left: 5px solid var(--line);
+}
+.q.is-ok { border-left-color: var(--ok); }
+.q.is-bad { border-left-color: var(--bad); }
+.q.is-unk { border-left-color: var(--unk); }
+.q-num { font-family: var(--font-mono); font-size: .78rem; color: var(--muted); }
+.opts { display: grid; gap: 8px; }
+.opt {
+  font: inherit;
+  text-align: left;
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--ink);
+  cursor: pointer;
+  display: flex; gap: 10px; align-items: flex-start;
+  transition: border-color .15s, background .15s;
+}
+.opt .letter {
+  font-family: var(--font-mono);
+  font-size: .8rem;
+  flex: 0 0 auto;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  display: inline-grid; place-items: center;
+  margin-top: 1px;
+  color: var(--muted);
+}
+.opt:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
+.opt:disabled { cursor: default; }
+.opt.correct { border-color: var(--ok); background: var(--ok-soft); }
+.opt.correct .letter { border-color: var(--ok); color: var(--ok); }
+.opt.chosen-wrong { border-color: var(--bad); background: var(--bad-soft); }
+.opt.chosen-wrong .letter { border-color: var(--bad); color: var(--bad); }
+.opt.faded { opacity: .55; }
+.unknown-btn {
+  justify-self: start;
+  font: inherit; font-size: .9rem;
+  background: none; border: 1px dashed var(--unk); color: var(--unk);
+  padding: 6px 12px; border-radius: 8px; cursor: pointer;
+}
+.unknown-btn:hover:not(:disabled) { background: var(--unk-soft); }
+.unknown-btn:disabled { opacity: .4; cursor: default; }
+
+.fb { border-radius: 8px; padding: 12px 14px; font-size: .95rem; display: grid; gap: 8px; }
+.fb[hidden] { display: none; }
+.fb.ok { background: var(--ok-soft); }
+.fb.bad { background: var(--bad-soft); }
+.fb.unk { background: var(--unk-soft); }
+.fb .verdict { font-weight: 600; }
+.fb.ok .verdict { color: var(--ok); }
+.fb.bad .verdict { color: var(--bad); }
+.fb.unk .verdict { color: var(--unk); }
+.fb p { margin: 0; }
+.jump {
+  justify-self: start;
+  font: inherit; font-size: .88rem; font-weight: 600; cursor: pointer;
+  display: inline-flex; gap: 8px; align-items: center;
+  padding: 6px 12px; border-radius: 8px;
+  border: 1px solid var(--accent); background: var(--surface); color: var(--accent);
+}
+.jump:hover { background: var(--accent-soft); }
+.jump svg { width: 12px; height: 12px; fill: currentColor; }
+
+/* Resultado */
+.results {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 22px 20px;
+  display: grid;
+  gap: 18px;
+}
+.score-line { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.big { font-family: var(--font-display); font-size: 2.6rem; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; }
+.big small { font-size: 1.1rem; color: var(--muted); font-weight: 500; }
+.overall { font-weight: 600; }
+.plan { display: grid; gap: 8px; }
+.plan h3 { font-family: var(--font-display); font-size: 1.05rem; }
+.plan-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.empty { color: var(--muted); font-size: .95rem; margin: 0; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.btn {
+  font: inherit; font-weight: 600; font-size: .95rem;
+  padding: 9px 16px; border-radius: 8px; cursor: pointer;
+  border: 1px solid var(--accent);
+  background: var(--accent); color: var(--on-accent);
+}
+.btn.ghost { background: transparent; color: var(--accent); }
+.status { font-size: .88rem; color: var(--muted); }
+
+.pager { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.pager > * {
+  display: grid; gap: 2px; text-decoration: none; color: var(--ink);
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+  padding: 10px 14px; min-width: 0; flex: 1 1 220px;
+}
+.pager a:hover { border-color: var(--accent); }
+.pager .next { text-align: right; }
+.pager .soon { opacity: .6; border-style: dashed; }
+.pager .dir { font-family: var(--font-mono); font-size: .75rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+footer { color: var(--muted); font-size: .85rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; scroll-behavior: auto !important; }
+}
+</style>
+</head>
+<body>
+<main class="wrap">
+
+  <nav class="blocknav" aria-label="Bloques del curso">
+    <a href="index.html"><span class="n">←</span>Inicio</a>
+    <a href="01-agentes.html" aria-current="page"><span class="n">01</span>Agentes</a>
+    <a href="02-arneses.html"><span class="n">02</span>Arneses</a>
+    <a href="03-sdd.html"><span class="n">03</span>SDD</a>
+    <a href="04-odd.html"><span class="n">04</span>ODD</a>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-top">
+      <div class="hero-title">
+        <span class="eyebrow">Bloque 1 de 4 · primer contacto</span>
+        <h1>Agentes de IA</h1>
+      </div>
+    </div>
+
+    <p class="summary-text">Antes de usar la IA como parte del trabajo diario conviene tener claro qué es un agente y en qué se diferencia de un chat. En este bloque verás que un agente no es «una IA», sino un software que usa un modelo de lenguaje como cerebro y le añade herramientas, skills y un entorno de trabajo: el arnés. También verás qué formas toma un agente en las aplicaciones que ya usas y qué cosas parecen agentes sin serlo.</p>
+    <p class="topics-title">Qué trabajaremos</p>
+    <ul class="topics">
+      <li>Chat frente a agente: ir preguntando frente a delegar un objetivo.</li>
+      <li>Qué hay dentro de un agente: modelo, herramientas, skills y arnés.</li>
+      <li>Para qué sirven las skills y por qué ahorran prompts gigantes.</li>
+      <li>Las formas de un agente: del chat a los agentes que se ejecutan solos.</li>
+      <li>GPTs, gemas y proyectos: qué son y cuál conviene usar.</li>
+    </ul>
+
+    <div class="video-bar">
+      <button class="video-btn" id="video-btn" type="button" aria-expanded="false" aria-controls="player">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z"/></svg>
+        <span id="video-btn-label">Ver vídeo</span>
+      </button>
+      <span class="video-info">Agentes de IA para todos · EDteam · unos 55 min</span>
+    </div>
+
+    <div class="player" id="player" hidden>
+      <div class="frame" id="frame"></div>
+      <div class="vmeta">
+        <span><span class="vt">Curso gratis: Agentes de IA para todos, desde cero</span><span class="vd">EDteam · Álvaro Felipe · unos 55 minutos</span></span>
+        <a href="https://www.youtube.com/watch?v=O4v9EWC47Go" target="_blank" rel="noopener">Abrir en YouTube ↗</a>
+      </div>
+      <div class="chapters">
+        <span class="chapters-title">Momentos clave (pulsa para saltar a ese minuto)</span>
+        <div class="chapter-list" id="chapters"></div>
+      </div>
+    </div>
+
+    <div class="progress-line">
+      <div class="progress" aria-hidden="true"><span id="progress-bar"></span></div>
+      <span class="count" id="count"></span>
+    </div>
+  </header>
+
+  <section class="qs" id="qs" aria-label="Preguntas"></section>
+
+  <section class="results" aria-live="polite">
+    <div>
+      <span class="eyebrow" id="res-eyebrow"></span>
+      <h2>Tu resultado</h2>
+    </div>
+    <div class="score-line">
+      <span class="big" id="score"></span>
+      <span class="overall" id="overall"></span>
+    </div>
+    <div class="plan">
+      <h3>Qué repasar en el vídeo</h3>
+      <div id="plan"></div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="copy" type="button">Copiar resumen</button>
+      <button class="btn ghost" id="reset" type="button">Empezar de nuevo</button>
+      <span class="status" id="status" role="status"></span>
+    </div>
+  </section>
+
+  <nav class="pager" aria-label="Siguiente bloque">
+    <span aria-hidden="true" style="visibility:hidden"></span>
+    <a href="02-arneses.html" class="next"><span class="dir">Siguiente →</span><span>Arneses</span></a>
+  </nav>
+
+  <footer>Vídeo de EDteam en YouTube. Si no se reproduce dentro de la página, usa «Abrir en YouTube».</footer>
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  const VIDEO_ID = "O4v9EWC47Go";
+  const VIDEO_URL = "https://www.youtube.com/watch?v=" + VIDEO_ID;
+  const BLOCK_TITLE = "Agentes de IA";
+
+  const CHAPTERS = [
+    { t: 94, label: "Chat frente a agente" },
+    { t: 547, label: "Qué es un agente" },
+    { t: 646, label: "El científico y su laboratorio" },
+    { t: 928, label: "Los niveles de agentes" },
+    { t: 2087, label: "GPTs, gemas y proyectos" },
+    { t: 2705, label: "Dónde viven los agentes" }
+  ];
+
+  // La primera opción de cada lista es la correcta; se barajan al mostrarlas.
+  // t = segundo del vídeo donde se explica.
+  const QS = [
+    {
+      q: "Según el vídeo, ¿cuál es la diferencia clave entre un chat de IA y un agente?",
+      opts: [
+        "El chat es reactivo: responde a cada mensaje y tú vas iterando. Al agente le das un objetivo y él planifica los pasos, los ejecuta y te entrega el resultado",
+        "El agente funciona con un modelo de IA más inteligente que el chat, por eso responde mejor a las mismas preguntas",
+        "El chat puede buscar información en internet y el agente solo trabaja con lo que le escribes en el prompt",
+        "Ninguna: «agente» es el nombre comercial que las empresas dan ahora a sus chats de siempre"
+      ],
+      expl: "Con un chat trabajas a ping-pong: pides, responde, corriges, vuelve a responder. Con un agente describes el objetivo, por ejemplo cotizar vuelos desde cuatro ciudades y entregarlo en un Excel, y él decide cómo hacerlo. Puede tardar unos minutos y avisarte al terminar.",
+      t: 94
+    },
+    {
+      q: "¿Qué es exactamente un agente de IA?",
+      opts: [
+        "Un software que usa un modelo de lenguaje (LLM) como cerebro y le añade herramientas, skills, memoria e instrucciones para cumplir tareas",
+        "Un modelo de lenguaje más grande y potente que los que se usan en los chats normales",
+        "Un chatbot al que se le ha configurado un nombre y una personalidad propios",
+        "Un robot físico que usa inteligencia artificial para moverse y realizar tareas"
+      ],
+      expl: "Un agente no es «una IA», es un programa que usa una IA. El modelo aporta la inteligencia; el resto del software le permite conectarse a herramientas, seguir instrucciones y recordar lo que está haciendo durante una tarea larga.",
+      t: 547
+    },
+    {
+      q: "En la analogía del científico en su laboratorio, ¿qué representa cada elemento?",
+      opts: [
+        "El científico es el agente, su cerebro es el LLM, sus instrumentos son las herramientas, sus libros y manuales son las skills y el laboratorio es el arnés",
+        "El científico es el LLM, sus instrumentos son las skills, sus libros son la memoria y el laboratorio es el agente",
+        "El cerebro es el agente, los libros son las herramientas, los instrumentos son el prompt y el laboratorio es el modelo",
+        "El laboratorio es el LLM, los instrumentos son las skills y el científico es la persona que escribe el prompt"
+      ],
+      expl: "El cerebro solo no puede hacer mucho: necesita instrumentos para actuar (las herramientas o tools: Gmail, Drive, Excel…) y manuales que le expliquen cómo hacer cada tarea (las skills). Todo el entorno que lo hace posible se llama arnés (harness), el tema del siguiente bloque.",
+      t: 646
+    },
+    {
+      q: "Siempre pides las cotizaciones de vuelos con las mismas columnas, aerolíneas y condiciones. ¿Qué te aporta crear una skill para esa tarea?",
+      opts: [
+        "Guarda las instrucciones detalladas de cómo hacer la tarea, así el agente la hace siempre igual y tu prompt puede ser corto",
+        "Conecta el agente con aplicaciones externas como Gmail o Google Drive para que pueda enviar la cotización",
+        "Hace que el agente recuerde todas las conversaciones anteriores que has tenido sobre vuelos",
+        "Entrena un modelo de IA nuevo, especializado en buscar y comparar vuelos"
+      ],
+      expl: "Sin skill tendrías que repetir un prompt gigante cada vez, y es fácil olvidar algún detalle. Con la skill basta con «cotízame vuelos de Lima a Bogotá para estas fechas»: el resto ya está escrito. Conectar con Gmail o Drive es cosa de las herramientas, no de las skills.",
+      t: 1018
+    },
+    {
+      q: "Todos los días a las 7:00 un agente te envía un resumen de tus correos y tus prioridades, sin que nadie lo invoque. ¿Qué tipo de agente es?",
+      opts: [
+        "Un agente automatizado: se pone en marcha solo, por un horario o por un evento",
+        "Un agente empaquetado: tiene nombre propio y lo llamas con @ o con /",
+        "Un agente invisible del chat: se activa cuando le escribes un prompt",
+        "No es un agente, sino una regla de correo configurada a mano"
+      ],
+      expl: "En los otros niveles (agentes invisibles en el chat, chats con skills y agentes empaquetados) eres tú quien llama al agente. El automatizado se ejecuta solo y, a diferencia de herramientas como Zapier o n8n, se configura describiendo la tarea en un prompt. Los niveles son didácticos: cada empresa implementa los agentes a su manera.",
+      t: 1213
+    },
+    {
+      q: "Un GPT personalizado de ChatGPT o una gema de Gemini, ¿son agentes?",
+      opts: [
+        "No: son el chat con unas instrucciones guardadas, útiles pero no son agentes",
+        "Sí: cualquier asistente con instrucciones propias ya es un agente",
+        "Sí, y además son la forma más avanzada de agente que existe",
+        "No, porque no usan ningún modelo de lenguaje por debajo"
+      ],
+      expl: "Un GPT o una gema equivale a un prompt guardado: tienes que entrar en él para usarlo y no puedes mover allí una conversación empezada fuera. Para organizar el trabajo, el vídeo recomienda los proyectos de ChatGPT o Claude: agrupan los chats de un mismo tema, que comparten instrucciones, archivos y contexto.",
+      t: 2087
+    }
+  ];
+
+  const TOTAL = QS.length;
+  const answers = {}; // índice -> "ok" | "bad" | "unk"
+  const LETTERS = ["A", "B", "C", "D", "E"];
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function el(tag, attrs, children) {
+    const node = document.createElement(tag);
+    if (attrs) {
+      for (const k in attrs) {
+        if (k === "class") node.className = attrs[k];
+        else if (k === "text") node.textContent = attrs[k];
+        else node.setAttribute(k, attrs[k]);
+      }
+    }
+    (children || []).forEach(c => { if (c) node.appendChild(typeof c === "string" ? document.createTextNode(c) : c); });
+    return node;
+  }
+
+  function mmss(s) {
+    const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), sec = String(s % 60).padStart(2, "0");
+    return h ? h + ":" + String(m).padStart(2, "0") + ":" + sec : String(m).padStart(2, "0") + ":" + sec;
+  }
+
+  function playIcon() {
+    const s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    s.setAttribute("viewBox", "0 0 16 16");
+    s.setAttribute("aria-hidden", "true");
+    const p = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    p.setAttribute("d", "M4 2.5v11l9-5.5z");
+    s.appendChild(p);
+    return s;
+  }
+
+  // ---------- Vídeo ----------
+  const videoBtn = document.getElementById("video-btn");
+  const videoLabel = document.getElementById("video-btn-label");
+  const player = document.getElementById("player");
+  const frame = document.getElementById("frame");
+  const chaptersEl = document.getElementById("chapters");
+
+  function loadVideo(start) {
+    frame.innerHTML = "";
+    frame.appendChild(el("iframe", {
+      src: "https://www.youtube-nocookie.com/embed/" + VIDEO_ID + "?rel=0&autoplay=1" + (start ? "&start=" + start : ""),
+      title: "Agentes de IA para todos (EDteam)",
+      allow: "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share",
+      referrerpolicy: "strict-origin-when-cross-origin",
+      allowfullscreen: ""
+    }));
+    chaptersEl.querySelectorAll(".chapter").forEach(c => c.setAttribute("aria-pressed", Number(c.dataset.t) === start ? "true" : "false"));
+  }
+
+  function openVideo(start) {
+    videoBtn.setAttribute("aria-expanded", "true");
+    videoLabel.textContent = "Ocultar vídeo";
+    player.hidden = false;
+    loadVideo(start || 0);
+  }
+
+  function closeVideo() {
+    videoBtn.setAttribute("aria-expanded", "false");
+    videoLabel.textContent = "Ver vídeo";
+    player.hidden = true;
+    frame.innerHTML = ""; // al cerrar se quita el iframe para detener la reproducción
+  }
+
+  // Abre el vídeo en un minuto concreto y sube hasta él
+  function jumpTo(start) {
+    openVideo(start);
+    player.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  CHAPTERS.forEach(c => {
+    const b = el("button", { class: "chapter", type: "button", "aria-pressed": "false" }, [
+      el("span", { class: "ts", text: mmss(c.t) }), c.label
+    ]);
+    b.dataset.t = c.t;
+    b.addEventListener("click", () => loadVideo(c.t));
+    chaptersEl.appendChild(b);
+  });
+
+  videoBtn.addEventListener("click", () => {
+    if (videoBtn.getAttribute("aria-expanded") === "true") closeVideo();
+    else openVideo(0);
+  });
+
+  function jumpButton(t, text) {
+    const b = el("button", { class: "jump", type: "button" }, [playIcon(), text]);
+    b.addEventListener("click", () => jumpTo(t));
+    return b;
+  }
+
+  // ---------- Preguntas ----------
+  const qsEl = document.getElementById("qs");
+
+  function render() {
+    qsEl.innerHTML = "";
+    QS.forEach((item, idx) => {
+      const card = el("article", { class: "q" });
+      card.appendChild(el("span", { class: "q-num", text: "Pregunta " + (idx + 1) + " de " + TOTAL }));
+      card.appendChild(el("h3", { text: item.q }));
+
+      const optsWrap = el("div", { class: "opts", role: "group", "aria-label": "Opciones" });
+      shuffle(item.opts).forEach((text, i) => {
+        const btn = el("button", { class: "opt", type: "button" }, [
+          el("span", { class: "letter", text: LETTERS[i] }),
+          el("span", { text: text })
+        ]);
+        btn.dataset.correct = text === item.opts[0] ? "1" : "0";
+        btn.addEventListener("click", () => answer(idx, item, card, btn));
+        optsWrap.appendChild(btn);
+      });
+      card.appendChild(optsWrap);
+
+      const unk = el("button", { class: "unknown-btn", type: "button", text: "No lo sé" });
+      unk.addEventListener("click", () => answer(idx, item, card, null));
+      card.appendChild(unk);
+      card.appendChild(el("div", { class: "fb", hidden: "" }));
+      qsEl.appendChild(card);
+    });
+    update();
+  }
+
+  function answer(idx, item, card, chosenBtn) {
+    if (answers[idx]) return;
+    const status = chosenBtn === null ? "unk" : (chosenBtn.dataset.correct === "1" ? "ok" : "bad");
+    answers[idx] = status;
+
+    card.querySelectorAll(".opt").forEach(b => {
+      b.disabled = true;
+      if (b.dataset.correct === "1") b.classList.add("correct");
+      else if (b === chosenBtn) b.classList.add("chosen-wrong");
+      else b.classList.add("faded");
+    });
+    card.querySelector(".unknown-btn").disabled = true;
+    card.classList.add("is-" + status);
+
+    const fb = card.querySelector(".fb");
+    fb.hidden = false;
+    fb.className = "fb " + status;
+    fb.innerHTML = "";
+    const verdicts = { ok: "Correcto.", bad: "No es correcta.", unk: "Sin problema, para eso está el repaso." };
+    fb.appendChild(el("p", { class: "verdict", text: verdicts[status] }));
+    if (status !== "ok") fb.appendChild(el("p", { text: "Respuesta correcta: " + item.opts[0] + "." }));
+    fb.appendChild(el("p", { text: item.expl }));
+    fb.appendChild(jumpButton(item.t, (status === "ok" ? "Verlo en el vídeo" : "Repásalo en el vídeo") + " (" + mmss(item.t) + ")"));
+    update();
+  }
+
+  // ---------- Resultado ----------
+  function update() {
+    const vals = Object.values(answers);
+    const answered = vals.length;
+    const ok = vals.filter(s => s === "ok").length;
+    const done = answered === TOTAL;
+
+    document.getElementById("count").textContent = answered + " de " + TOTAL + " respondidas";
+    document.getElementById("progress-bar").style.width = (answered / TOTAL * 100) + "%";
+    const score = document.getElementById("score");
+    score.innerHTML = "";
+    score.append(String(ok), el("small", { text: " / " + TOTAL }));
+    document.getElementById("res-eyebrow").textContent = done ? "Resultado del bloque" : "Resultado provisional · " + answered + " de " + TOTAL;
+
+    const overall = document.getElementById("overall");
+    if (answered === 0) overall.textContent = "Responde las preguntas para ver tu resultado.";
+    else if (!done) overall.textContent = "Te quedan " + (TOTAL - answered) + " preguntas.";
+    else overall.textContent = ok === TOTAL ? "Bloque dominado. Ya tienes clara la base sobre agentes."
+      : ok / TOTAL >= 0.6 ? "Buena base. Repasa en el vídeo los momentos de abajo."
+      : "Te recomendamos ver el vídeo completo y volver a intentarlo.";
+
+    const plan = document.getElementById("plan");
+    plan.innerHTML = "";
+    const misses = QS.map((item, idx) => ({ item, idx })).filter(x => answers[x.idx] && answers[x.idx] !== "ok");
+    if (misses.length) {
+      const list = el("div", { class: "plan-list" });
+      misses.forEach(x => list.appendChild(jumpButton(x.item.t, mmss(x.item.t) + " · Pregunta " + (x.idx + 1))));
+      plan.appendChild(list);
+    } else {
+      plan.appendChild(el("p", { class: "empty", text: answered === 0
+        ? "Aquí aparecerán los minutos del vídeo que explican las preguntas que falles o marques como «No lo sé»."
+        : "De momento no tienes nada que repasar." }));
+    }
+  }
+
+  function summaryText() {
+    const vals = Object.values(answers);
+    const ok = vals.filter(s => s === "ok").length;
+    const lines = [
+      "Curso inicial · Bloque 1: " + BLOCK_TITLE,
+      "Fecha: " + new Date().toLocaleDateString("es-ES"),
+      "Resultado: " + ok + "/" + TOTAL + " aciertos (" + vals.length + "/" + TOTAL + " respondidas)"
+    ];
+    const misses = QS.map((item, idx) => ({ item, idx })).filter(x => answers[x.idx] && answers[x.idx] !== "ok");
+    if (misses.length) {
+      lines.push("", "Para repasar en el vídeo (" + VIDEO_URL + "):");
+      misses.forEach(x => lines.push("- " + mmss(x.item.t) + " · " + x.item.q));
+    }
+    return lines.join("\n");
+  }
+
+  document.getElementById("copy").addEventListener("click", () => {
+    const status = document.getElementById("status");
+    try {
+      navigator.clipboard.writeText(summaryText()).then(
+        () => { status.textContent = "Resumen copiado."; },
+        () => { status.textContent = "No se pudo copiar. Selecciona el texto del resultado y cópialo a mano."; }
+      );
+    } catch (e) {
+      status.textContent = "No se pudo copiar. Selecciona el texto del resultado y cópialo a mano.";
+    }
+  });
+
+  document.getElementById("reset").addEventListener("click", () => {
+    Object.keys(answers).forEach(k => delete answers[k]);
+    document.getElementById("status").textContent = "";
+    render();
+    window.scrollTo(0, 0);
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
