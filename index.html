@@ -1,1 +1,123 @@
-<h1>Test</h1>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Test nivel base</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+/* Portada del test: lista de los 10 bloques. Mismos colores y tipografías que las páginas de bloque. */
+:root {
+  --bg: #eef1f2; --surface: #ffffff; --ink: #15232b; --muted: #56666f; --line: #d3dbde;
+  --accent: #b5620a; --accent-soft: #fbeedd; --brand: #134e5e; --brand-soft: #e1edf0;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f171b; --surface: #17232a; --ink: #e4ecef; --muted: #9aabb3; --line: #2a3a42;
+    --accent: #f0a34a; --accent-soft: #3a2a17; --brand: #7cc3d4; --brand-soft: #1b3139;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f171b; --surface: #17232a; --ink: #e4ecef; --muted: #9aabb3; --line: #2a3a42;
+  --accent: #f0a34a; --accent-soft: #3a2a17; --brand: #7cc3d4; --brand-soft: #1b3139;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.55; }
+a:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.wrap { max-width: 820px; margin: 0 auto; padding: 32px 20px 64px; display: grid; gap: 28px; }
+h1 { font-family: var(--font-display); font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 700; line-height: 1.15; margin: 0; text-wrap: balance; }
+.eyebrow { font-family: var(--font-mono); font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; color: var(--brand); }
+header { display: grid; gap: 12px; }
+.lead { color: var(--muted); max-width: 65ch; margin: 0; }
+.note { background: var(--brand-soft); border-left: 4px solid var(--brand); padding: 10px 14px; border-radius: 6px; font-size: .92rem; max-width: 65ch; margin: 0; }
+ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.item {
+  display: flex; gap: 14px; align-items: center;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+  padding: 14px 16px; text-decoration: none; color: var(--ink);
+  transition: border-color .15s;
+}
+.item:hover { border-color: var(--accent); }
+.num { font-family: var(--font-mono); color: var(--accent); font-size: .9rem; flex: 0 0 auto; }
+.txt { display: grid; gap: 2px; flex: 1; min-width: 0; }
+.t { font-weight: 600; }
+.d { color: var(--muted); font-size: .9rem; }
+.qn { font-size: .8rem; color: var(--muted); white-space: nowrap; flex: 0 0 auto; }
+footer { color: var(--muted); font-size: .85rem; }
+@media (max-width: 560px) { .qn { display: none; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <span class="eyebrow">Diagnóstico · nivel base</span>
+    <h1>¿Tienes claro SDD, ODD, agentes y arneses?</h1>
+    <p class="lead">33 preguntas cortas en 10 bloques, desde los fundamentos de los modelos de lenguaje hasta la seguridad de los agentes. Cada bloque tiene un resumen, un vídeo y sus preguntas. Al responder verás si has acertado y por qué, y si fallas te recomendamos qué repasar.</p>
+    <p class="note"><strong>Qué entendemos por ODD aquí:</strong> Organic Driven Development, el flujo de trabajo por defecto de Gentle AI (Gentleman Programming), que se compara con SDD. No confundir con Observability-Driven Development, que es otra práctica.</p>
+  </header>
+  <ol>
+    <li><a class="item" href="01-fundamentos.html">
+      <span class="num">01</span>
+      <span class="txt"><span class="t">Fundamentos de los modelos de lenguaje</span><span class="d">Lo mínimo que hay que saber de un LLM antes de trabajar con agentes.</span></span>
+      <span class="qn">3 preguntas</span>
+    </a></li>
+    <li><a class="item" href="02-herramientas-mcp.html">
+      <span class="num">02</span>
+      <span class="txt"><span class="t">Herramientas y MCP</span><span class="d">Cómo un agente actúa sobre el mundo: llamadas a funciones y el protocolo estándar para conectarlas.</span></span>
+      <span class="qn">3 preguntas</span>
+    </a></li>
+    <li><a class="item" href="03-contexto.html">
+      <span class="num">03</span>
+      <span class="txt"><span class="t">Context engineering</span><span class="d">Decidir qué información ve el agente en cada momento, y qué no.</span></span>
+      <span class="qn">3 preguntas</span>
+    </a></li>
+    <li><a class="item" href="04-sdd.html">
+      <span class="num">04</span>
+      <span class="txt"><span class="t">SDD · Spec-Driven Development</span><span class="d">Desarrollo guiado por especificaciones: primero se acuerda qué construir y después el agente lo implementa.</span></span>
+      <span class="qn">3 preguntas</span>
+    </a></li>
+    <li><a class="item" href="05-odd.html">
+      <span class="num">05</span>
+      <span class="txt"><span class="t">ODD · Organic Driven Development</span><span class="d">El flujo por defecto de Gentle AI: ligero para lo que está claro, con registro recuperable para el trabajo grande.</span></span>
+      <span class="qn">3 preguntas</span>
+    </a></li>
+    <li><a class="item" href="06-odd-vs-sdd.html">
+      <span class="num">06</span>
+      <span class="txt"><span class="t">ODD vs SDD · cuándo usar cada uno</span><span class="d">Los dos hacen que el agente entienda antes de tocar código; cambia la ceremonia según el tamaño y la ambigüedad del trabajo.</span></span>
+      <span class="qn">3 preguntas</span>
+    </a></li>
+    <li><a class="item" href="07-agentes.html">
+      <span class="num">07</span>
+      <span class="txt"><span class="t">Agentes y orquestación</span><span class="d">Qué es un agente, cuándo merece la pena y cómo se coordinan varios.</span></span>
+      <span class="qn">5 preguntas</span>
+    </a></li>
+    <li><a class="item" href="08-arneses.html">
+      <span class="num">08</span>
+      <span class="txt"><span class="t">Arneses (harness engineering)</span><span class="d">Todo lo que rodea al modelo para que el agente sea fiable: herramientas, contexto, memoria, permisos y verificación.</span></span>
+      <span class="qn">4 preguntas</span>
+    </a></li>
+    <li><a class="item" href="09-evaluacion.html">
+      <span class="num">09</span>
+      <span class="txt"><span class="t">Evaluación y verificación</span><span class="d">Cómo saber si un agente funciona de verdad, más allá de la impresión.</span></span>
+      <span class="qn">3 preguntas</span>
+    </a></li>
+    <li><a class="item" href="10-seguridad.html">
+      <span class="num">10</span>
+      <span class="txt"><span class="t">Seguridad y control</span><span class="d">Qué puede salir mal cuando un agente actúa por su cuenta y cómo limitarlo.</span></span>
+      <span class="qn">3 preguntas</span>
+    </a></li>
+  </ol>
+  <footer>Los recursos recomendados son gratuitos. Puedes hacer los bloques en el orden que quieras.</footer>
+</main>
+</body>
+</html>
